@@ -1,0 +1,2 @@
+Progress 
+First week(09/11/2023): - write a Python flask file with simple HTML and CSS files to show two webpages(Home and Player)
