@@ -47,6 +47,7 @@ section {
     padding: 20px;
     background-color: #678;
     margin-right: 50px;
+    text-align: center;
 }
 
 .game_sidebar button{
@@ -61,5 +62,9 @@ section {
 
 .game_list{
     display: none;
+}
+
+.game_list label{
+    display: block;
 }
 
