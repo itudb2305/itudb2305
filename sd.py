@@ -9,7 +9,6 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
-
 @app.route("/player")
 def player():
     return render_template('player.html', title='Player')
@@ -17,6 +16,10 @@ def player():
 @app.route("/competitions")
 def competitions():
     return render_template('competitions.html', title='Competitions')
+
+@app.route("/games")
+def games():
+    return render_template('games.html', title='Games')
 
 
 if __name__ == '__main__':

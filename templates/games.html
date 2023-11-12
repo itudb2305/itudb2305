@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}Player{% endblock %}
+{% block content %}
+
+    <section id="games">
+        <h1>Welcome to Our games page</h1>
+        <p>This is the games page of Futbalmania</p>
+    </section>
+
+    <div class="game_sidebar"> <!--for search of table-->
+        <button class="accordion">elma</button>
+            <div class="game_list">
+                <input type="checkbox">eass</button>
+                <input type="checkbox">eass</button>
+            </div>
+        <button class="accordion">armut</button>
+            <div class="game_list">
+                <input type="checkbox">eass</button>
+            </div>
+        <button class="accordion">patate</button>
+            <div class="game_list">
+                <input type="checkbox">eass</button>
+            </div>
+    </div>
+
+    <p>table contents are here</p>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+        
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+              panel.style.display = "none";
+            } else {
+              panel.style.display = "block";
+            }
+          });
+        }
+        </script>
+
+{% endblock %}
