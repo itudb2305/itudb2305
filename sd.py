@@ -19,7 +19,7 @@ def player():
 def competitions():
     list0f_competitions = ["England", "Italy", "Germany", "Turkey"]
     random_competition = random.choice(list0f_competitions)
-    return render_template('competitions.html', title='Competitions', random_thing=random_thing)
+    return render_template('competitions.html', title='Competitions', random_competition=random_competition)
 
 @app.route("/games")
 def games():
