@@ -1,4 +1,6 @@
 from flask import Flask, render_template, url_for
+import random
+import mysql.connector as dbapi
 app = Flask(__name__)
 
 
@@ -15,7 +17,9 @@ def player():
 
 @app.route("/competitions")
 def competitions():
-    return render_template('competitions.html', title='Competitions')
+    list0f_competitions = ["England", "Italy", "Germany", "Turkey"]
+    random_competition = random.choice(list0f_competitions)
+    return render_template('competitions.html', title='Competitions', random_thing=random_thing)
 
 @app.route("/games")
 def games():
