@@ -2,9 +2,15 @@ from flask import Flask, render_template, url_for
 
 app = Flask(__name__)
 
+#mysql_config = {
+   # 'host': 'localhost',
+   # 'user': 'root',
+   # 'password': 'momo',
+   # 'database': 'Football',
+#}
 
-
-
+#conn = mysql.connector.connect(**mysql_config)
+#cursor = conn.cursor()
 
 
 @app.route("/")
