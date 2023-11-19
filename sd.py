@@ -1,17 +1,8 @@
 from flask import Flask, render_template, url_for
-#import mysql.connector
 
 app = Flask(__name__)
 
-#mysql_config = {
-   # 'host': 'localhost',
-   # 'user': 'root',
-   # 'password': 'momo',
-   # 'database': 'Football',
-#}
 
-#conn = mysql.connector.connect(**mysql_config)
-#cursor = conn.cursor()
 
 
 
@@ -27,7 +18,9 @@ def player():
 
 @app.route("/competitions")
 def competitions():
-    return render_template('competitions.html', title='Competitions')
+    list0f_competitions = ["England", "Italy", "Germany", "Turkey"]
+    random_competition = random.choice(list0f_competitions)
+    return render_template('competitions.html', title='Competitions', random_competition=random_competition)
 
 @app.route("/games")
 def games():
