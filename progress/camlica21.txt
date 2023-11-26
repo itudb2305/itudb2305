@@ -1,1 +1,2 @@
 First week(09/11/2023): Wrote a basic html file, competitions.
+Second week: Added a random generation to the competitions page, and the corresponding flask code.
