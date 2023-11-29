@@ -5,15 +5,21 @@ def game_get_comp():
 
     cursor = connection.cursor()
 
-    statement = """select distinct(competition_id) from games"""
+    statement = """select competition_id, competitions_name
+                    from competitions"""
 
     cursor.execute(statement)
     game_competitions = cursor.fetchall()
+    result = [list(comp) for comp in game_competitions]
+
+    for i in range(len(result)):
+        result[i][1] = result[i][1].replace('-', ' ')
+        result[i][1] = result[i][1].title()
 
     cursor.close()
     connection.close()
 
-    return game_competitions
+    return result
 
 def game_get_season():
     connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")

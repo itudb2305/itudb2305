@@ -11,7 +11,7 @@
         <button class="accordion">Competitions</button>
           <div class="game_list">
               {% for value in game_competitions %}
-                <label><input type="checkbox" name="{{value}}"/>{{ value }}</label>
+                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[1] }}</label>
               {% endfor %}
           </div>
         <button class="accordion">armut</button>

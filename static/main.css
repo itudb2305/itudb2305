@@ -8,7 +8,7 @@ body {
     background-color: #333;
     color: #fff;
     padding: 13px 0;
-    position: sticky;
+    position: fixed;
     width: 100%;
 }
 
@@ -42,12 +42,13 @@ section {
 
 .game_sidebar{
     float: left;
-    width: 15%;
+    width: 20%;
     background: #ccc;
     padding: 20px;
     background-color: #678;
     margin-right: 50px;
-    text-align: center;
+    /*text-align: center;*/
+
 }
 
 .game_sidebar button{
@@ -62,6 +63,10 @@ section {
 
 .game_list{
     display: none;
+    overflow-y: scroll;
+    scrollbar-color: grey lightgrey;
+    scrollbar-width: thin;
+    max-height: 10 vh;
 }
 
 .game_list label{
