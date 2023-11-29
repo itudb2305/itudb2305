@@ -1,7 +1,14 @@
 import mysql.connector as dbapi # mysql
+from dotenv import load_dotenv
+load_dotenv()
+import os
+HOST = os.getenv("HOST")
+PORT = os.getenv("PORT")
+USER = os.getenv("USER")
+PASSWORD = os.getenv("PASSWORD")
 
 def game_get_comp():
-    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
     cursor = connection.cursor()
 

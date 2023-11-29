@@ -63,10 +63,6 @@ section {
 
 .game_list{
     display: none;
-    overflow-y: scroll;
-    scrollbar-color: grey lightgrey;
-    scrollbar-width: thin;
-    max-height: 10 vh;
 }
 
 .game_list label{
