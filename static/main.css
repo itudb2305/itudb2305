@@ -63,14 +63,36 @@ section {
 
 .game_list{
     display: none;
+    max-height: 30vh;
+    overflow: scroll;
+    background-color: wheat; 
 }
 
 .game_list label{
     display: block;
+    border: 1px solid;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border-color: lightblue  ;
 }
 
 .top_nav{
     display: block;
     display: flex;
     align-items: center;
+}
+
+.game_table{
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-right: 30px;
+}
+
+.game_table tr, td, th{
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    padding: 4px;
 }

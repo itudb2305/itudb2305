@@ -14,33 +14,52 @@
                 <label><input type="checkbox" name="{{value[0]}}"/>{{ value[1] }}</label>
               {% endfor %}
           </div>
-        <button class="accordion">armut</button>
+        <button class="accordion">Seasons</button>
           <div class="game_list">
-              <label><input type="checkbox" name="2_1"/>easd</label>
+              {% for value in game_season %}
+                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[0] }}</label>
+              {% endfor %}
           </div>
-        <button class="accordion">patate</button>
+        <button class="accordion">Game Round</button>
           <div class="game_list">
-              <label><input type="checkbox" name="3_1"/>easd</label>
+              {% for value in game_rounds %}
+                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[0] }}</label>
+              {% endfor %}
+          </div>
+        <button class="accordion">Clubs</button>
+          <div class="game_list">
+              {% for value in game_clubs %}
+                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[1] }}</label>
+              {% endfor %}
           </div>
           <input type="submit" class="search" value="Search" />
     </div>
 
-    <table style="border: 1px solid black;  border-collapse: collapse; text-align: center;"> <!--This part is placeholder for tables-->>
+    <table class = "game_table"> <!--This part is placeholder for tables-->
       <tr>
-        <td>r1c1</td>
-        <td>r2c1</td>
-        <td>r3c1</td>
+        <th>Competition</th>
+        <th>Game Round</th>
+        <th>Home Club</th>
+        <th>Scores</th>
+        <th>Away Club</th>
+        <th>Date</th>
+        <th>Details</th>
+        <th>Edit</th>
+        <th>Delete</th>
       </tr>
+      {% for value in game_games %}
       <tr>
-        <td>r1c2</td>
-        <td>r2c2</td>
-        <td>r3c2</td>
+        <td>{{value[1]}}</td>
+        <td>{{value[2]}}</td>
+        <td>{{value[3]}}</td>
+        <td>{{value[4]}} - {{value[5]}}</td>
+        <td>{{value[6]}}</td>
+        <td>{{value[7]}}</td>
+        <td><input type="submit" class="Details" value="Details" /></td>
+        <td><input type="submit" class="Edit" value="Edit" /></td>
+        <td><input type="submit" class="Delete" value="Delete" /></td>
       </tr>
-      <tr>
-        <td>r1c3</td>
-        <td>r2c3</td>
-        <td>r3c3</td>
-      </tr>
+      {% endfor %}
     </table>
 
     <script>
@@ -58,6 +77,6 @@
             }
           });
         }
-        </script>
+      </script>
 
 {% endblock %}

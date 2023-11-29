@@ -3,17 +3,6 @@ from data_base import *
 
 app = Flask(__name__)
 
-#mysql_config = {
-   # 'host': 'localhost',
-   # 'user': 'root',
-   # 'password': 'momo',
-   # 'database': 'Football',
-#}
-
-#conn = mysql.connector.connect(**mysql_config)
-#cursor = conn.cursor()
-
-
 @app.route("/")
 @app.route("/home")
 def home():
@@ -32,7 +21,17 @@ def competitions():
 @app.route("/games")
 def games():
     game_competitions = game_get_comp()
-    return render_template('games.html', title='Games', game_competitions = game_competitions)
+    game_season = game_get_season()
+    game_rounds = game_get_round()
+    game_clubs = game_get_clubs()
+    game_games = game_get_games()
+    return render_template('games.html', 
+                            title='Games',
+                            game_competitions = game_competitions,
+                            game_season = game_season,
+                            game_rounds = game_rounds,
+                            game_clubs = game_clubs,
+                            game_games = game_games)
 
 
 if __name__ == '__main__':
