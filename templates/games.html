@@ -8,10 +8,11 @@
     </section>
 
     <div class="game_sidebar"> <!--for search of table-->
-        <button class="accordion">elma</button>
+        <button class="accordion">Competitions</button>
           <div class="game_list">
-              <label><input type="checkbox" name="1_1"/>easd</label>
-              <label><input type="checkbox" name="1_2"/> easd</label>
+              {% for value in game_competitions %}
+                <label><input type="checkbox" name="{{value}}"/>{{ value }}</label>
+              {% endfor %}
           </div>
         <button class="accordion">armut</button>
           <div class="game_list">

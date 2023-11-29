@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for
+from data_base import *
 
 app = Flask(__name__)
 
@@ -30,7 +31,8 @@ def competitions():
 
 @app.route("/games")
 def games():
-    return render_template('games.html', title='Games')
+    game_competitions = game_get_comp()
+    return render_template('games.html', title='Games', game_competitions = game_competitions)
 
 
 if __name__ == '__main__':
