@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Player{% endblock %}
+{% block content %}
+    <section id="player">
+        <h1>Let's play a game</h1>
+        <p>Try your best guy</p>
+        
+
+    <form action="{{ url_for('submit') }}" method="post">
+        <h3>Which national team does {{q}} represent?</h3>
+        <input type="radio" name="answer" value="{{v0}}"  > {{ v0 }}<br>
+        <input type="radio" name="answer" value="{{v1}}"  > {{ v1 }}<br>
+        <input type="radio" name="answer" value="{{v2}}"  > {{ v2 }}<br>
+        <button type="submit">Submit Answer</button>
+    </form>
+
+
+</section>
+{% endblock %}

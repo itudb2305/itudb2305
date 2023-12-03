@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Player{% endblock %}
+{% block content %}
+    <section id="player">
+        <h1>Let's play a game</h1>
+        <p>Try your best</p>
+        
+        <h1>Quiz Result</h1>
+        {% if is_correct %}
+            <p>Your answer is correct!</p>
+        {% else %}
+            <p>Oops! Your answer is incorrect.</p>
+        {% endif %}
+        <br>
+        <a href="./quiz_game">Next Question</a>
+
+    </section>
+{% endblock %}
