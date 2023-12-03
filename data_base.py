@@ -58,11 +58,22 @@ def game_get_round():
 
     cursor.execute(statement)
     rounds = cursor.fetchall()
+    return rounds
+
+def player_t():
+    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+
+    cursor = connection.cursor()
+
+    statement = 'SELECT players_name,country_of_citizenship,position FROM players;'
+
+    cursor.execute(statement)
+    result_2 = cursor.fetchall()
 
     cursor.close()
     connection.close()
 
-    return rounds
+    return result_2
 
 def game_get_clubs():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
@@ -101,6 +112,31 @@ def game_get_games():
         result[i][1] = result[i][1].replace('-', ' ')
         result[i][1] = result[i][1].title()
     
+    return result
+
+def question_game():
+    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+    
+    cursor = connection.cursor(dictionary=True)
+
+    statement = 'SELECT players_name,country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2015 ORDER BY RAND() LIMIT 1;'
+   
+    cursor.execute(statement)
+    result_3 = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return result_3
+
+def random_value():
+    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+    
+    cursor = connection.cursor(dictionary=True)
+
+    statement = 'SELECT country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2015 ORDER BY RAND() LIMIT 1;'
+   
+    cursor.execute(statement)
+    random_value = cursor.fetchall()
 
     cursor.close()
     connection.close()
@@ -138,4 +174,4 @@ def get_transfer_list():
             result =cursor.fetchall()
             cursor.close()
             connection.close()    
-            return result
+            return random_value

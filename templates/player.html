@@ -4,5 +4,31 @@
     <section id="player">
         <h1>Welcome to Our Player page</h1>
         <p>This is the homepage of Futbalmania</p>
+        <h1>Player Data</h1>
+
+    {% if result %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>NAME</th>
+                    <th>COUNTRY</th>
+                    <th>POSITION </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in result %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        
+    {% else %}
+        <p>No data available.</p>
+    {% endif %}
     </section>
 {% endblock %}
