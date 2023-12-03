@@ -1,5 +1,6 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from data_base import *
+import random
 
 app = Flask(__name__)
 
@@ -33,6 +34,10 @@ def games():
                             game_clubs = game_clubs,
                             game_games = game_games)
 
+@app.route("/transfer", methods=['POST', 'GET'])
+def transfer():
+    players=get_transfer_list()
+    return render_template('transfer.html', title='transfer', players=players)
 
 if __name__ == '__main__':
     app.run(debug=True)

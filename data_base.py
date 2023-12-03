@@ -1,4 +1,5 @@
 import mysql.connector as dbapi # mysql
+from flask import Flask, render_template, request
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -105,3 +106,36 @@ def game_get_games():
     connection.close()
 
     return result
+
+def get_transfer_list():
+        if request.method == 'POST':
+            connection = dbapi.connect(host = 'localhost', port = 3306, user = 'root', password='Emre1234', database="futbalmania")
+
+            cursor = connection.cursor()
+            min_value = request.form.get('minvalue')
+            max_value = request.form.get('maxvalue')
+            min_age = request.form.get('minage')
+            max_age = request.form.get('maxage')
+            position = request.form.get('position')
+            sub_position = request.form.get('subposition')
+            foot=request.form.get("foot")
+            nationality = request.form.get('nationality')
+            team = request.form.get('team')
+
+            statement = """SELECT A.first_name, A.last_name
+                            FROM futbalmania.players A
+                            Join futbalmania.player_valuations B on A.player_id = B.player_id
+                            Join futbalmania.clubs C ON  A.current_club_id = C.club_id
+                            WHERE B.market_value_in_eur BETWEEN %s AND %s
+                             AND A.position LIKE %s
+                             AND A.sub_position LIKE %s
+                             AND A.foot LIKE %s
+                             AND A.country_of_citizenship LIKE %s
+                             AND C.clubs_name LIKE %s
+                             AND B.dateweek = '2023-09-18';"""
+            
+            cursor.execute(statement, (min_value, max_value, position, sub_position, foot, nationality, team))
+            result =cursor.fetchall()
+            cursor.close()
+            connection.close()    
+            return result
