@@ -141,7 +141,7 @@ def random_value():
     cursor.close()
     connection.close()
 
-    return result
+    return random_value
 
 def get_transfer_list():
         if request.method == 'POST':
