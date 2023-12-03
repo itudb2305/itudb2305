@@ -145,7 +145,7 @@ def random_value():
 
 def get_transfer_list():
         if request.method == 'POST':
-            connection = dbapi.connect(host = 'localhost', port = 3306, user = 'root', password='Emre1234', database="futbalmania")
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
             cursor = connection.cursor()
             min_value = request.form.get('minvalue')
