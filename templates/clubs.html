@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Player{% endblock %}
+{% block content %}
+    <section id="player">
+        <h1>Welcome to Our PlayeClubs page</h1>
+        <p>This is the homepage of Futbalmania</p>
+        <h1>Club Data</h1>
+
+        <h2>Countries</h2>
+
+            <ul id="country-filter">
+            {% for key, values in country.items() %}
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      {{ key}}
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <ul>
+                            {% for value in values %}
+                                <li>{{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                  </div>
+                </div>
+
+            </div>  
+            </ul>
+          
+            {% endfor %}
+    </section>
+
+
+{% endblock %}

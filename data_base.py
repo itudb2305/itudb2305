@@ -61,7 +61,7 @@ def game_get_round():
     return rounds
 
 def player_t():
-    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
     cursor = connection.cursor()
 
@@ -75,6 +75,24 @@ def player_t():
 
     return result_2
 
+def club_list():
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+
+    cursor = connection.cursor()
+
+    statement =  '''SELECT clubs_name, country_name 
+                 FROM clubs
+                JOIN competitions
+                ON clubs.domestic_competition_id = competitions.domestic_league_code; '''
+
+    cursor.execute(statement)
+    clubslist = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return clubslist
+
 def game_get_clubs():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
@@ -86,7 +104,7 @@ def game_get_clubs():
                     order by A.clubs_name;"""
 
     cursor.execute(statement)
-    seasons = cursor.fetchall()
+    seasons = cursor.fetchall()     
 
     cursor.close()
     connection.close()
@@ -115,7 +133,7 @@ def game_get_games():
     return result
 
 def question_game():
-    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
     
     cursor = connection.cursor(dictionary=True)
 
@@ -129,7 +147,7 @@ def question_game():
     return result_3
 
 def random_value():
-    connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="12345", database="futbalmania")
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
     
     cursor = connection.cursor(dictionary=True)
 
