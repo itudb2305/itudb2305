@@ -9,16 +9,16 @@
 <div class="transfer_search">
 <form method="post", action="{{ url_for('transfer') }}">
     <label for="minvalue">Min Value</label>
-    <input type="number", id="minvalue", name="minage" value="0", step="1">
+    <input type="number", id="minvalue", name="minvalue" value="0", step="1">
 
     <label for="maxvalue">Max Value</label>
-    <input type="number", id="maxvalue" name="maxage" value="1000000000", step="1">
+    <input type="number", id="maxvalue" name="maxvalue" value="1000000000", step="1">
 
     <label for="minage">Min Age</label>
-    <input type="number", id="minage" name="minvalue" value="15", step="1">
+    <input type="number", id="minage" name="minage" value="15", step="1">
 
     <label for="maxage">Max Age</label>
-    <input type="number", id="maxage" name="maxvalue" value="45", step="1">    
+    <input type="number", id="maxage" name="maxage" value="45", step="1">    
 
     <label for="position">Position</label>
     <select id="position", name="position">
@@ -61,7 +61,7 @@
 
             const selectedposition = positionselect.value;
             if(selectedposition==='Defender'){
-                addoption("Center-Back", "CB");
+                addoption("Centre-Back", "CB");
                 addoption("Left-Back", "LB");
                 addoption("Right-Back", "RB");
             }
@@ -94,10 +94,14 @@
 </div>
 <section>
     <h1>Search results:</h1>
-<div class="transfer_result">
-    {% for person in player %}
-    <p>{{ person}}<br></p>
-    {% endfor %}
-</div>
+    <div class="transfer_result">
+        {% if players %}
+            {% for person in players %}
+                <p>{{ person[0] }} {{ person[1] }}<br></p>
+            {% endfor %}
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    </div>
 </section>
 {% endblock %}

@@ -100,8 +100,11 @@ def games():
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
-    players=get_transfer_list()
-    return render_template('transfer.html', title='transfer', players=players)
+    if request.method == 'POST':
+        players = get_transfer_list(request)
+        return render_template('transfer.html', title='Transfer', players=players)
+    else:
+        return render_template('transfer.html', title='Transfer', players=None)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

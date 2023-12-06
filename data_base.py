@@ -161,13 +161,13 @@ def random_value():
 
     return random_value
 
-def get_transfer_list():
+def get_transfer_list(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
 
             cursor = connection.cursor()
-            min_value = request.form.get('minvalue')
-            max_value = request.form.get('maxvalue')
+            min_value = int(request.form.get('minvalue'))
+            max_value = int(request.form.get('maxvalue'))
             min_age = request.form.get('minage')
             max_age = request.form.get('maxage')
             position = request.form.get('position')
@@ -176,20 +176,28 @@ def get_transfer_list():
             nationality = request.form.get('nationality')
             team = request.form.get('team')
 
-            statement = """SELECT A.first_name, A.last_name
-                            FROM futbalmania.players A
-                            Join futbalmania.player_valuations B on A.player_id = B.player_id
-                            Join futbalmania.clubs C ON  A.current_club_id = C.club_id
-                            WHERE B.market_value_in_eur BETWEEN %s AND %s
-                             AND A.position LIKE %s
-                             AND A.sub_position LIKE %s
-                             AND A.foot LIKE %s
-                             AND A.country_of_citizenship LIKE %s
-                             AND C.clubs_name LIKE %s
-                             AND B.dateweek = '2023-09-18';"""
+            position_pattern = f"%{position}%"
+            sub_position_pattern = f"%{sub_position}%"
+            foot_pattern = f"%{foot}%"
+            nationality_pattern = f"%{nationality}%"
+            team_pattern = f"%{team}%"
+
+            statement = """SELECT A.first_name, A.last_name, MAX(B.player_valuations_date) as latest
+                           FROM futbalmania.players A
+                           Join futbalmania.player_valuations B on A.player_id = B.player_id
+                           Join futbalmania.clubs C ON  A.current_club_id = C.club_id
+                           WHERE B.market_value_in_eur BETWEEN %s AND %s
+                           AND A.position LIKE %s
+                           AND A.sub_position LIKE %s
+                           AND A.foot LIKE %s
+                           AND A.country_of_citizenship LIKE %s
+                           AND B.last_season = 2023
+                           GROUP BY A.first_name, A.last_name
+                           ORDER BY latest DESC;
+                           """
             
-            cursor.execute(statement, (min_value, max_value, position, sub_position, foot, nationality, team))
+            cursor.execute(statement, (min_value, max_value, position_pattern, sub_position_pattern, foot_pattern, nationality_pattern))
             result =cursor.fetchall()
             cursor.close()
             connection.close()    
-            return random_value
+            return result
