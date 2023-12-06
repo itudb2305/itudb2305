@@ -85,18 +85,39 @@ def competitions():
 
 @app.route("/games")
 def games():
+    game_competitions_list = request.args.getlist('comp')
+    game_season_list = request.args.getlist('game_season')
+    game_rounds_list = request.args.getlist('game_rounds')
+    game_clubs_list = request.args.getlist('game_clubs')
+    page_get = request.args.get('page')
+    page_num = 0
+    try:
+        page_num = int(page_get)
+        if page_num < 1:
+            page_num = 1
+    except:
+        page_num = 1
+
+    #for filtering menu
     game_competitions = game_get_comp()
     game_season = game_get_season()
     game_rounds = game_get_round()
     game_clubs = game_get_clubs()
-    game_games = game_get_games()
+    #for getting list of games
+    game_games = game_get_games(game_competitions_list, game_season_list, game_rounds_list, game_clubs_list, page_num)
+    #page render
     return render_template('games.html', 
                             title='Games',
+                            game_competitions_list = game_competitions_list,
+                            game_season_list = game_season_list,
+                            game_rounds_list = game_rounds_list,
+                            game_clubs_list = game_clubs_list,
                             game_competitions = game_competitions,
                             game_season = game_season,
                             game_rounds = game_rounds,
                             game_clubs = game_clubs,
-                            game_games = game_games)
+                            game_games = game_games,
+                            page_num = page_num)
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():

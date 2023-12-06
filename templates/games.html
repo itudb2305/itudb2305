@@ -8,31 +8,34 @@
     </section>
 
     <div class="game_sidebar"> <!--for search of table-->
-        <button class="accordion">Competitions</button>
+      <form id="filter_potato">
+        <button type="button" class="accordion">Competitions</button>
           <div class="game_list">
               {% for value in game_competitions %}
-                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[1] }}</label>
+                <label><input type="checkbox" name="comp" value="{{value[0]}}" {% if value[0] in game_competitions_list %} checked {% endif %} />{{ value[1] }}</label>
               {% endfor %}
           </div>
-        <button class="accordion">Seasons</button>
+        <button type="button" class="accordion">Seasons</button>
           <div class="game_list">
               {% for value in game_season %}
-                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[0] }}</label>
+                <label><input type="checkbox" name="game_season" value="{{value[0]}}" {% if value[0]|string in game_season_list %} checked {% endif %} />{{ value[0] }}</label>
               {% endfor %}
           </div>
-        <button class="accordion">Game Round</button>
+        <button type="button" class="accordion">Game Round</button>
           <div class="game_list">
               {% for value in game_rounds %}
-                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[0] }}</label>
+                <label><input type="checkbox" name="game_rounds" value="{{value[0]}}" {% if value[0] in game_rounds_list %} checked {% endif %} />{{ value[0] }}</label>
               {% endfor %}
           </div>
-        <button class="accordion">Clubs</button>
+        <button type="button" class="accordion">Clubs</button>
           <div class="game_list">
               {% for value in game_clubs %}
-                <label><input type="checkbox" name="{{value[0]}}"/>{{ value[1] }}</label>
+                <label><input type="checkbox" name="game_clubs" value="{{value[0]}}" {% if value[0]|string in game_clubs_list %} checked {% endif %} />{{ value[1] }}</label>
               {% endfor %}
           </div>
+          <label>Page: <input type="text" name="page" value="{{page_num}}"/></label>
           <input type="submit" class="search" value="Search" />
+      </form>
     </div>
 
     <table class = "game_table"> <!--This part is placeholder for tables-->
@@ -44,7 +47,6 @@
         <th>Away Club</th>
         <th>Date</th>
         <th>Details</th>
-        <th>Edit</th>
         <th>Delete</th>
       </tr>
       {% for value in game_games %}
@@ -56,27 +58,27 @@
         <td>{{value[6]}}</td>
         <td>{{value[7]}}</td>
         <td><input type="submit" class="Details" value="Details" /></td>
-        <td><input type="submit" class="Edit" value="Edit" /></td>
         <td><input type="submit" class="Delete" value="Delete" /></td>
       </tr>
       {% endfor %}
     </table>
 
     <script>
-        var acc = document.getElementsByClassName("accordion");
-        var i;
-        
-        for (i = 0; i < acc.length; i++) {
-          acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-              panel.style.display = "none";
-            } else {
-              panel.style.display = "block";
-            }
-          });
-        }
-      </script>
+      var acc = document.getElementsByClassName("accordion");
+      var i;
+      
+      for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+          this.classList.toggle("active");
+          var panel = this.nextElementSibling;
+          if (panel.style.display === "block") {
+            panel.style.display = "none";
+          } else {
+            panel.style.display = "block";
+          }
+        });
+      }
+
+    </script>
 
 {% endblock %}

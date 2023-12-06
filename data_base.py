@@ -111,7 +111,7 @@ def game_get_clubs():
 
     return seasons
 
-def game_get_games():
+def game_get_games(game_competitions_list, game_season_list, game_rounds_list, game_clubs_list, page_num):
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
     cursor = connection.cursor()
@@ -119,10 +119,51 @@ def game_get_games():
     statement = """SELECT A.game_id, B.competitions_name, A.games_round, A.home_club_name, A.home_club_goals, A.away_club_goals, A.away_club_name, A.games_date
                     FROM futbalmania.games A
                     JOIN futbalmania.competitions B on A.competition_id = B.competition_id
+                    %s
                     order by games_date DESC
-                    LIMIT 20 OFFSET 0;"""
+                    LIMIT 20 OFFSET %s;"""
+    
+    where_statement = "WHERE TRUE" #By default is true, so we can concatenate "AND (<condition>)" for all category without check
+    comp_sel = ""
+    game_season_sel = ""
+    game_rounds_sel = ""
+    game_clubs_sel = ""
 
-    cursor.execute(statement)
+    if len(game_competitions_list) == 0: #DONE
+        comp_sel = "TRUE"
+    else:
+        comp_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_competitions_list:
+            comp_sel = comp_sel + " OR A.competition_id = '%s' " %str(x)
+    where_statement = where_statement + " AND ( " + comp_sel + ")"
+
+    if len(game_season_list) == 0: #DONE
+        game_season_sel = "TRUE"
+    else:
+        game_season_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_season_list:
+            game_season_sel = game_season_sel + " OR A.season = %s " %str(x)
+    where_statement = where_statement + " AND ( " + game_season_sel + ")"
+
+    if len(game_rounds_list) == 0: #DONE
+        game_rounds_sel = "TRUE"
+    else:
+        game_rounds_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_rounds_list:
+            game_rounds_sel = game_rounds_sel + " OR A.games_round = '%s' " %str(x)
+    where_statement = where_statement + " AND ( " + game_rounds_sel + ")"
+
+    if len(game_clubs_list) == 0: #DONE
+        game_clubs_sel = "TRUE"
+    else:
+        game_clubs_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_clubs_list:
+            game_clubs_sel = game_clubs_sel + " OR A.home_club_id = %s OR A.away_club_id = %s " %(str(x), str(x))
+    where_statement = where_statement + " AND ( " + game_clubs_sel + ")"
+
+    print(where_statement)
+
+    cursor.execute(statement %(where_statement, str( (page_num - 1)*20 ) ) )
     games = cursor.fetchall()
     result = [list(comp) for comp in games]
 
