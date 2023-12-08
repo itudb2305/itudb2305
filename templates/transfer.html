@@ -3,8 +3,7 @@
 {% block content %}
 
 <section id="transfer">
-    <h1>Welcome to Competitions page</h1>
-    <p>This page shows the transfer page.</p>
+    <h1>Transfer Page</h1>
 </section>
 <div class="transfer_search">
 <form method="post", action="{{ url_for('transfer') }}">
@@ -96,9 +95,34 @@
     <h1>Search results:</h1>
     <div class="transfer_result">
         {% if players %}
-            {% for person in players %}
-                <p>{{ person[0] }} {{ person[1] }}<br></p>
-            {% endfor %}
+        <table id="transfer_result_table">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Team</th>
+                    <th>Foot</th>
+                    <th>Height</th>
+                    <th>Market Value</th>
+                    <th>Contract Expiration Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in players %}
+                    <tr>
+                        <td>{{ person[0] }}</td>
+                        <td>{{ person[1] }} {{ person[2] }}</td>
+                        <td>{{ person[3] }}</td>
+                        <td>{{ person[4] }}</td>
+                        <td>{{ person[5] }}</td>
+                        <td>{{ person[6] }}</td>
+                        <td>{{ person[7] }}</td>
+                        <td>{{ person[8] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
             <p>No results found.</p>
         {% endif %}

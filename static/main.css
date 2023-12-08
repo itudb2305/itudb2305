@@ -97,3 +97,21 @@ section {
     text-align: center;
     padding: 4px;
 }
+
+#transfer_result_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#transfer_result_table th {
+    text-align: center;
+    padding: 8px;
+    background-color: #fdc777; /* Optional background color for headers */
+}
+
+#transfer_result_table td {
+    text-align: center;
+    padding: 8px;
+    border-bottom: 1px solid #ddd; /* Optional border between rows */
+}

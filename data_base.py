@@ -111,7 +111,7 @@ def game_get_clubs():
 
     return seasons
 
-def game_get_games(game_competitions_list, game_season_list, game_rounds_list, game_clubs_list, page_num):
+def game_get_games():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
     cursor = connection.cursor()
@@ -119,51 +119,10 @@ def game_get_games(game_competitions_list, game_season_list, game_rounds_list, g
     statement = """SELECT A.game_id, B.competitions_name, A.games_round, A.home_club_name, A.home_club_goals, A.away_club_goals, A.away_club_name, A.games_date
                     FROM futbalmania.games A
                     JOIN futbalmania.competitions B on A.competition_id = B.competition_id
-                    %s
                     order by games_date DESC
-                    LIMIT 20 OFFSET %s;"""
-    
-    where_statement = "WHERE TRUE" #By default is true, so we can concatenate "AND (<condition>)" for all category without check
-    comp_sel = ""
-    game_season_sel = ""
-    game_rounds_sel = ""
-    game_clubs_sel = ""
+                    LIMIT 20 OFFSET 0;"""
 
-    if len(game_competitions_list) == 0: #DONE
-        comp_sel = "TRUE"
-    else:
-        comp_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
-        for x in game_competitions_list:
-            comp_sel = comp_sel + " OR A.competition_id = '%s' " %str(x)
-    where_statement = where_statement + " AND ( " + comp_sel + ")"
-
-    if len(game_season_list) == 0: #DONE
-        game_season_sel = "TRUE"
-    else:
-        game_season_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
-        for x in game_season_list:
-            game_season_sel = game_season_sel + " OR A.season = %s " %str(x)
-    where_statement = where_statement + " AND ( " + game_season_sel + ")"
-
-    if len(game_rounds_list) == 0: #DONE
-        game_rounds_sel = "TRUE"
-    else:
-        game_rounds_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
-        for x in game_rounds_list:
-            game_rounds_sel = game_rounds_sel + " OR A.games_round = '%s' " %str(x)
-    where_statement = where_statement + " AND ( " + game_rounds_sel + ")"
-
-    if len(game_clubs_list) == 0: #DONE
-        game_clubs_sel = "TRUE"
-    else:
-        game_clubs_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
-        for x in game_clubs_list:
-            game_clubs_sel = game_clubs_sel + " OR A.home_club_id = %s OR A.away_club_id = %s " %(str(x), str(x))
-    where_statement = where_statement + " AND ( " + game_clubs_sel + ")"
-
-    print(where_statement)
-
-    cursor.execute(statement %(where_statement, str( (page_num - 1)*20 ) ) )
+    cursor.execute(statement)
     games = cursor.fetchall()
     result = [list(comp) for comp in games]
 
@@ -223,7 +182,9 @@ def get_transfer_list(request):
             nationality_pattern = f"%{nationality}%"
             team_pattern = f"%{team}%"
 
-            statement = """SELECT A.first_name, A.last_name, MAX(B.player_valuations_date) as latest
+            statement = """SELECT A.sub_position, A.first_name, A.last_name, TIMESTAMPDIFF(YEAR, A.date_of_birth, CURDATE()) AS age, 
+                           A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur,
+                           A.contract_expiration_date, MAX(B.player_valuations_date) as latest
                            FROM futbalmania.players A
                            Join futbalmania.player_valuations B on A.player_id = B.player_id
                            Join futbalmania.clubs C ON  A.current_club_id = C.club_id
@@ -232,12 +193,15 @@ def get_transfer_list(request):
                            AND A.sub_position LIKE %s
                            AND A.foot LIKE %s
                            AND A.country_of_citizenship LIKE %s
+                           AND A.current_club_name LIKE %s
+                           AND TIMESTAMPDIFF(YEAR, A.date_of_birth, CURDATE()) BETWEEN %s AND %s
                            AND B.last_season = 2023
-                           GROUP BY A.first_name, A.last_name
+                           GROUP BY A.sub_position, A.first_name, A.last_name, age, 
+                           A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur, A.contract_expiration_date 
                            ORDER BY latest DESC;
                            """
             
-            cursor.execute(statement, (min_value, max_value, position_pattern, sub_position_pattern, foot_pattern, nationality_pattern))
+            cursor.execute(statement, (min_value, max_value, position_pattern, sub_position_pattern, foot_pattern, nationality_pattern, team_pattern, min_age, max_age))
             result =cursor.fetchall()
             cursor.close()
             connection.close()    
