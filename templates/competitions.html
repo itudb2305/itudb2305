@@ -4,18 +4,53 @@
 
 <section id="Competitions">
     <h1>Welcome to Competitions page</h1>
-    <p>This page shows the list of competitions.</p>
+    <p>This page shows the list of competitions of the country you choose.</p>
 </section>
-
-<div class="topnav">
-    <form action = ''>
-    <input type="text" placeholder="Search Competition">
-    <button type="submit"></button>
-    </form>    
+<div class="country_search">
+    <form method="post", action="{{ url_for('competitions') }}">
+        <label for="country">Country</label>
+        <select id="country_search", name="country">
+            <option value="" selected>International</option>
+            <option value="Belgium">Belgium</option>
+            <option value="Denmark">Denmark</option>
+            <option value="England">England</option>
+            <option value="Germany">Germany</option>
+            <option value="Greece">Greece</option>
+            <option value="Italy">Italy</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="Portugal">Portugal</option>
+            <option value="Russia">Russia</option>
+            <option value="Scotland">Scotland</option>
+            <option value="Spain">Spain</option>
+            <option value="Turkey">Turkey</option>
+            <option value="Ukraine">Ukraine</option>
+        </select> 
+        <button type="submit">Search</button>
+    </form>
 </div>
-
-<div>
-    <h1>Random Competition: {{ random_competition }}</h1>
-    <a href="{{ url_for('competitions') }}">Generate Random Thing</a>
+<div class="country_result">
+    {% if competition %}
+    <table id="competition_result_table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Country Name</th>
+                <th>ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for each in competition %}
+                <tr>
+                    <td>{{ each[0] }}</td>
+                    <td>{{ each[1] }}</td>
+                    <td>{{ each[2] }}</td>
+                    <td>{{ each[3] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </div>
+</section>
 {% endblock %}

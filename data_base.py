@@ -206,3 +206,21 @@ def get_transfer_list(request):
             cursor.close()
             connection.close()    
             return result
+
+def get_competition_country(request):
+        if request.method == 'POST':
+            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
+            cursor = connection.cursor()
+            country = request.form.get('country')
+
+            statement="""SELECT A.competitions_name, A.sub_type, A.country_name, A.competition_id
+                         FROM futbalmania.competitions A
+                         WHERE A.country_name = %s
+                         GROUP BY A.competition_id, A.competitions_name, A.sub_type
+                         ORDER BY A.competitions_name"""
+            
+            cursor.execute(statement, (country, ))
+            result =cursor.fetchall()
+            cursor.close()
+            connection.close()    
+            return result

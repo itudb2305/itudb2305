@@ -77,11 +77,13 @@ def submit():
 
 
 
-@app.route("/competitions")
+@app.route("/competitions", methods=['POST', 'GET'])
 def competitions():
-    list0f_competitions = ["England", "Italy", "Germany", "Turkey"]
-    random_competition = random.choice(list0f_competitions)
-    return render_template('competitions.html', title='Competitions', random_competition=random_competition)
+    if request.method == 'POST':
+        competition = get_competition_country(request)
+        return render_template('competitions.html', title='Competitions', competition=competition)
+    else:
+        return render_template('competitions.html', title='Competitions', competition=None)
 
 @app.route("/games")
 def games():
