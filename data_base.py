@@ -137,7 +137,7 @@ def question_game():
     
     cursor = connection.cursor(dictionary=True)
 
-    statement = 'SELECT players_name,country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2015 ORDER BY RAND() LIMIT 1;'
+    statement = 'SELECT players_name,country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2017 ORDER BY RAND() LIMIT 1;'
    
     cursor.execute(statement)
     result_3 = cursor.fetchall()
