@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block title %}Player{% endblock %}
+{% block content %}
+    <section id="player">
+        <style>
+            .a ccordion-item {
+                margin-bottom: 10px; /* Adjust the value as needed */
+                width: 50%;
+            }
+        </style>
+
+
+
+        <h1>Welcome to Our Club games page</h1>
+        <h1>Games Data</h1>
+        
+      
+
+        <p>
+            {% for row in result %}
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading{{ loop.index }}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                                {{ row[0] }}
+                                {{ row[1] }}
+                            </button>
+
+                                
+                        </h2>
+                        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse show" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Home Team</th>
+                                            <th scope="col">Away Team</th>
+                                            <th scope="col">Home Team Score</th>
+                                            <th scope="col">Away Team Score</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Competition</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </p>
+        
+        
+    </section>
+
+
+{% endblock %}

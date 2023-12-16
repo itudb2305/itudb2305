@@ -44,6 +44,12 @@ def clubs():
    
     return render_template('clubs.html', title='Player',xxx=my_dict, country=my_dict, clubn=my_dict)
 
+@app.route("/clubs_game/<int:club_id>")
+def clubs_game(club_id=3):
+    club_games = clubgame_list(club_id)
+
+    
+    return render_template('clubs_game.html', title='Clubs Games', result=club_games)
 
 
 @app.route("/quiz_game")

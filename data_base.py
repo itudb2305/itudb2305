@@ -76,14 +76,17 @@ def player_t():
     return result_2
 
 def club_list():
+    #xto get the clublist
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
     cursor = connection.cursor()
 
-    statement =  '''SELECT clubs_name, country_name 
-                 FROM clubs
-                JOIN competitions
-                ON clubs.domestic_competition_id = competitions.domestic_league_code; '''
+    statement =  '''
+                    SELECT clubs_name, country_name 
+                    FROM clubs
+                    JOIN competitions
+                    ON clubs.domestic_competition_id = competitions.domestic_league_code; 
+                '''
 
     cursor.execute(statement)
     clubslist = cursor.fetchall()
@@ -93,6 +96,28 @@ def club_list():
 
     return clubslist
 
+def clubgame_list(club_id):
+    #xto get the clublist
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+
+    cursor = connection.cursor()
+
+    statement =  '''
+                    SELECT c1.clubs_name as club_name, c2.clubs_name AS opponent_name,
+                    cg.own_goals as goal_for, cg.opponent_goals AS goal_against,
+                    cg.own_manager_name, cg.opponent_manager_name
+                    FROM futbalmania.club_games AS cg
+                    JOIN clubs c1 ON cg.club_id = c1.club_id  
+                    JOIN clubs c2 ON cg.opponent_id = c2.club_id
+                    WHERE c1.club_id = %s; 
+                '''
+    cursor.execute(statement, (club_id, ))
+    clubslist = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return clubslist
 def game_get_clubs():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
@@ -163,7 +188,8 @@ def random_value():
 
 def get_transfer_list(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
+            #connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
             cursor = connection.cursor()
             min_value = int(request.form.get('minvalue'))
