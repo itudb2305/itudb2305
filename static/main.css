@@ -1,4 +1,5 @@
 body {
+    padding-top: 60px;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -11,6 +12,9 @@ body {
     padding: 13px 0;
     position: fixed;
     width: 100%;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 .top_bar nav ul {
@@ -156,3 +160,66 @@ section {
     background-color: #ff0000;
     color: #fff;
   }
+
+  .quiz-section {
+    padding-top: 60px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    padding: 20px;
+    margin-top: 70px; 
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.quiz-question {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.quiz-options {
+    margin-bottom: 20px;
+}
+
+.quiz-options input[type="radio"] {
+    margin-right: 10px;
+}
+
+.quiz-submit-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.quiz-submit-button:hover {
+    background-color: #45a049;
+}
+
+.quiz-result {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: red;
+    font-style: italic;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #938989; 
+}
+
+.table th, .table td {
+    padding: 12px; 
+    vertical-align: middle; 
+}
+
+.table-responsive {
+    max-height: 400px; 
+    overflow-y: auto; 
+}

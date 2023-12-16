@@ -1,18 +1,55 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request , session
+import random
 from data_base import *
 import random
 
+
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 @app.route("/")
 @app.route("/home")
 def home():
     return render_template('home.html')
 
+
 @app.route("/player")
 def player():
-    player_values = player_t()
-    return render_template('player.html', title='Player', result=player_values)
+    search_query = request.args.get('search', '')
+    country_filter = request.args.get('country')
+    position_filter = request.args.get('position')
+    club_filter = request.args.get('club')
+    page = request.args.get('page', 1, type=int)
+    per_page = 30
+
+    available_countries = get_available_countries()
+    available_positions = get_available_positions()
+    available_clubs = get_available_clubs()
+
+    player_values = player_t()  
+
+    if search_query:
+        player_values = [player for player in player_values if search_query.lower() in player[0].lower()]
+
+    if country_filter:
+        player_values = [player for player in player_values if player[1] == country_filter]
+
+    if position_filter:
+        player_values = [player for player in player_values if player[2] == position_filter]
+
+    if club_filter:
+        player_values = [player for player in player_values if player[3] == club_filter]
+
+    total = len(player_values)
+    start = (page - 1) * per_page
+    end = start + per_page
+    players_on_page = player_values[start:end]
+
+    total_pages = total // per_page + (1 if total % per_page > 0 else 0)
+    return render_template('player.html', title='Player', result=players_on_page,  countries=available_countries, positions=available_positions, clubs=available_clubs ,page=page, total_pages=total_pages)
+
+
+
 
 @app.route("/clubs")
 def clubs():
@@ -46,34 +83,44 @@ def clubs():
 
 
 
-@app.route("/quiz_game")
+@app.route("/quiz_game", methods=['GET', 'POST'])
 def quiz_game():
-    q = question_game()
-    global global_variable
-    global_variable = q[0]['country_of_citizenship']
-    n = q[-1]['players_name']
+    if 'score' not in session:
+        session['score'] = 0
 
-    v1 = random_value()
-    while v1[0]['country_of_citizenship'] == global_variable:
-        v1 = random_value()
+    if request.method == 'POST':
+        user_answer = request.form.get('answer')  
+        if not user_answer:
+            q = session.get('last_question', '')
+            values = session.get('last_values', [])
+            return render_template('quiz_game.html', title='Quiz Game', q=q, values=values, submitted=False, error_message="Please select an answer.")
 
-    v2 = random_value()
-    while v2[0]['country_of_citizenship'] == global_variable or v2[0]['country_of_citizenship'] == v1[0]['country_of_citizenship']:
-        v2 = random_value()
+        correct_answer = session.get('correct_answer', '')
+        is_correct = user_answer == correct_answer
 
-    values = [global_variable, v1[0]['country_of_citizenship'], v2[0]['country_of_citizenship']]
-    random.shuffle(values)
-    
-    return render_template('quiz_game.html', title='Quiz Game', q=n, v0=values[0], v1=values[1], v2=values[2])
+        if is_correct:
+            session['score'] += 1
+            return render_template('quiz_game.html', is_correct=True, score=session['score'], submitted=True)
+        else:
+            final_score = session['score']
+            session['score'] = 0
+            return render_template('quiz_game.html', is_correct=False, correct_answer=correct_answer, score=final_score, submitted=True, game_over=True)
+    else:
+        q = question_game()
+        session['correct_answer'] = q[0]['country_of_citizenship']
+        n = q[-1]['players_name']
 
+        values = [session['correct_answer']]
+        while len(values) < 3:
+            random_country = random_value()[0]['country_of_citizenship']
+            if random_country not in values:
+                values.append(random_country)
 
+        random.shuffle(values)
+        session['last_question'] = n
+        session['last_values'] = values
 
-@app.route("/quiz_game_result", methods=['POST'])
-def submit():
-    user_answer = request.form['answer']
-    correct_answer = global_variable
-    is_correct = user_answer == correct_answer
-    return render_template('quiz_game2.html', is_correct=is_correct, correct_answer=correct_answer,user_answer=user_answer)
+        return render_template('quiz_game.html', title='Quiz Game', q=n, values=values, submitted=False)
 
 
 

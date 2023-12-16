@@ -65,7 +65,12 @@ def player_t():
 
     cursor = connection.cursor()
 
-    statement = 'SELECT players_name,country_of_citizenship,position FROM players;'
+    statement = """
+    SELECT p.players_name, c.clubs_name ,p.position ,p.country_of_citizenship
+    FROM players p
+    INNER JOIN clubs c ON p.current_club_id = c.club_id
+    ORDER BY p.players_name;
+     """
 
     cursor.execute(statement)
     result_2 = cursor.fetchall()
@@ -132,12 +137,72 @@ def game_get_games():
     
     return result
 
+def get_available_countries():
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+
+    cursor = connection.cursor()
+
+    statement = """SELECT distinct(country_of_citizenship)
+                    FROM players
+                    ORDER BY country_of_citizenship;"""
+
+    cursor.execute(statement)
+    countries = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return countries
+
+def get_available_positions():
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+
+    cursor = connection.cursor()
+
+    statement = """SELECT distinct(position)
+                    FROM players
+                    ORDER BY position;"""
+
+    cursor.execute(statement)
+    positions = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return positions
+
+def get_available_clubs():
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+
+    cursor = connection.cursor()
+    
+
+    statement = """SELECT distinct(c.clubs_name)
+                    FROM players p
+                    JOIN clubs c ON p.current_club_id = c.club_id;
+                    ORDER BY clubs_name;"""
+
+    cursor.execute(statement)
+    clubs = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return clubs
+
 def question_game():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
     
     cursor = connection.cursor(dictionary=True)
 
-    statement = 'SELECT players_name,country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2017 ORDER BY RAND() LIMIT 1;'
+    statement = """SELECT players_name,country_of_citizenship 
+    FROM players 
+    WHERE highest_market_value_in_eur >= 50000000 
+    AND last_season > 2017 
+    AND players_name IS NOT NULL 
+    AND country_of_citizenship IS NOT NULL 
+    ORDER BY RAND() 
+    LIMIT 1;"""
    
     cursor.execute(statement)
     result_3 = cursor.fetchall()
@@ -151,7 +216,13 @@ def random_value():
     
     cursor = connection.cursor(dictionary=True)
 
-    statement = 'SELECT country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2015 ORDER BY RAND() LIMIT 1;'
+    statement = """ SELECT country_of_citizenship 
+    FROM players 
+    WHERE highest_market_value_in_eur >= 50000000 
+    AND last_season > 2015 
+    AND country_of_citizenship IS NOT NULL
+    ORDER BY RAND() 
+    LIMIT 1;"""
    
     cursor.execute(statement)
     random_value = cursor.fetchall()

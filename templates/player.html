@@ -1,34 +1,110 @@
 {% extends "layout.html" %}
 {% block title %}Player{% endblock %}
 {% block content %}
-    <section id="player">
-        <h1>Welcome to Our Player page</h1>
-        <p>This is the homepage of Futbalmania</p>
-        <h1>Player Data</h1>
+<section class="container mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-4 col-lg-3 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Search Player</h3>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('player') }}" method="get" class="mb-4">
+                        <div class="input-group mb-3">
+                            <input type="text" name="search" class="form-control" placeholder="Search for a player...">
+                            <button type="submit" class="btn btn-outline-secondary">Search</button>
+                        </div>
+                    </form>
 
-    {% if result %}
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>NAME</th>
-                    <th>COUNTRY</th>
-                    <th>POSITION </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in result %}
-                    <tr>
-                        {% for value in row %}
-                            <td>{{ value }}</td>
+                    <h3>Filter Players</h3>
+                    <form action="{{ url_for('player') }}" method="get">
+                        <!-- Country Filter -->
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country:</label>
+                                <select name="country" id="country" class="form-select">
+                                    <option value="">Any</option>
+                                    {% for country in countries %}
+                                        <option value="{{ country }}"> {{country}} </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Position Filter -->
+                            <div class="mb-3">
+                                <label for="position" class="form-label">Position:</label>
+                                <select name="position" id="position" class="form-select">
+                                    <option value="">Any</option>
+                                    {% for position in positions %}
+                                        <option value="{{ position }}">{{ position }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Club Filter -->
+                            <div class="mb-3">
+                                <label for="club" class="form-label">Club:</label>
+                                <select name="club" id="club" class="form-select">
+                                    <option value="">Any</option>
+                                    {% for club in clubs %}
+                                        <option value="{{ club }}">{{ club }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Data Section -->
+        <div class="col-md-8 col-lg-9">
+            <h2>Player Data</h2>
+
+            {% if result %}
+                <table class="table table-hover table-responsive">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center">NAME</th>
+                            <th class="text-center">CLUB</th>
+                            <th class="text-center">POSITION</th>
+                            <th class="text-center">COUNTRY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result %}
+                            <tr>
+                                {% for value in row %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
                         {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
 
-        
-    {% else %}
-        <p>No data available.</p>
-    {% endif %}
-    </section>
+                <!-- Pagination -->
+                <div style="margin-top: 20px;">
+                    <ul class="pagination">
+                        {% if page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('player', page=page-1) }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Page {{ page }} of {{ total_pages }}</span>
+                        </li>
+                        {% if page < total_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('player', page=page+1) }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% else %}
+                <p>No data available.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
 {% endblock %}
