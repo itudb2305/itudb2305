@@ -3,3 +3,5 @@ First week(09/11/2023): - write a Python flask file with simple HTML and CSS fil
 Second week(19/11/2023): - connect the database to flask file
 third week(03/12/2023): - show player table in a online page + creation of a quiz game to guess the player nationality
 fourth week(10/12/2023): - still working on the quiz game
+fifth week(17/12/2023): - improve quizz game style , make it more challenging with stop the game if you loose
+                        - improve the style of player page , create a search bar and make it work , create a filter bar(still didnt finish it)
