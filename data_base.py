@@ -224,3 +224,39 @@ def get_competition_country(request):
             cursor.close()
             connection.close()    
             return result
+        
+def update_value(request):
+        if request.method == 'POST':
+            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            cursor = connection.cursor()
+
+            name = request.form.get('name')
+            surname = request.form.get('surname')
+            team = request.form.get('team')
+            value = int(request.form.get('value'))
+            team_pattern = f"%{team}%"
+
+            statement = """ SELECT A.player_id, A.current_club_id, A.current_club_domestic_competition_id 
+                            FROM futbalmania.players A
+                            WHERE A.first_name = %s
+                            AND A.last_name = %s
+                            AND A.current_club_name LIKE %s
+                            LIMIT 1;"""
+            
+            cursor.execute(statement, (name, surname, team_pattern))
+            result =cursor.fetchall()
+            if result:
+                print(result[0][0], value, result[0][1], result[0][2])
+            else:
+                print("No results found.")
+
+            statement2 = """ INSERT INTO futbalmania.player_valuations 
+                            VALUES (%s, YEAR(CURDATE()), NOW(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL - WEEKDAY(CURDATE()) DAY),
+                            %s, 1, %s, %s); 
+                            """
+            
+            cursor.execute(statement2, (result[0][0], value, result[0][1], result[0][2]))
+            connection.commit()
+            cursor.close()
+            connection.close() 
+    

@@ -129,5 +129,25 @@ def transfer():
     else:
         return render_template('transfer.html', title='Transfer', players=None)
 
+@app.route("/player_valuation")
+def player_valuation():
+    return render_template('player_valuation.html', title='Player Valuation')
+
+@app.route("/sell_player")
+def sell_player():
+    return render_template('sell_player.html', title='Sell Player')
+
+@app.route("/update_market_value", methods=['POST', 'GET'])
+def update_market_value():
+    if request.method == 'POST':
+        update_value(request)
+        return render_template('update_market_value.html', title='UpdateValue')
+    else:
+        return render_template('update_market_value.html', title='Update Market Value')
+
+@app.route("/correct_valuation")
+def correct_valuation():
+    return render_template('correct_valuation.html', title='Correct Valuation')
+
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

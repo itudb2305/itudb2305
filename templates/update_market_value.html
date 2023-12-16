@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Update Market Value{% endblock %}
+{% block content %}
+
+<section id="update_home">
+    <h1>Update the Value of a Player</h1>
+</section>
+
+<div class="update_player_market_value">
+    <form method="post", action="{{ url_for('update_market_value') }}">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name">
+
+        <label for="surname">Surname</label>
+        <input type="text" id="surname" name="surname">
+
+        <label for="team">Team</label>
+        <input type="text" id="team" name="team">
+
+        <label for="value">New Value</label>
+        <input type="number" id="value" name="value">
+
+        <button type="submit">Apply New Values</button>
+    </form>
+</div>
+
+{% endblock %}

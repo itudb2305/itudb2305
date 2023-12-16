@@ -133,3 +133,26 @@ section {
     padding: 8px;
     border-bottom: 1px solid #ddd; /* Optional border between rows */
 }
+  
+.player_valuation_ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 0 0; 
+  }
+  
+  .styled-link {
+    display: block;
+    padding: 10px;
+    background-color: #157bc4;
+    color: #fff;
+    text-decoration: solid;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    width: fit-content;
+  }
+  
+  .styled-link:hover {
+    background-color: #ff0000;
+    color: #fff;
+  }
