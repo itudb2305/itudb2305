@@ -82,7 +82,7 @@ def club_list():
     cursor = connection.cursor()
 
     statement =  '''
-                    SELECT clubs_name, country_name 
+                    SELECT clubs_name, country_name, club_id
                     FROM clubs
                     JOIN competitions
                     ON clubs.domestic_competition_id = competitions.domestic_league_code; 

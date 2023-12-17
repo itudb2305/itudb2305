@@ -23,7 +23,13 @@
                         <h2 class="accordion-header" id="heading{{ loop.index }}">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
                                 {{ row[0] }}
+                                &nbsp;
+                                {{ row[2] }}
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{ row[3] }}
+                                &nbsp;
                                 {{ row[1] }}
+                               
                             </button>
 
                                 
@@ -41,6 +47,8 @@
                                             <th scope="col">Competition</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                       
                                     <tbody>
 
                                         

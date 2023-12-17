@@ -20,29 +20,38 @@ def clubs():
     data = club_list()
     datacopied = []
     country = []
+    #convert the tuple to list
     for i in range(len(data)):
         datacopied.append(data[i])
 
     valxvaly = []
+    valxvalz = []
+    #append the clubs
     for i in range(len(datacopied)):
         valxvaly.append(datacopied[i][1])
+        valxvalz.append(datacopied[i][2])
     
     unique_list = []
-    # traverse for all elements
+    # get unique countries
     for x in valxvaly:
         # check if exists in unique_list or not
         if x not in unique_list:
             unique_list.append(x)
     
+    #create a dictionary
     my_dict = {key: [] for key in unique_list}
+    my_dict2 = {key: [] for key in unique_list}
 
     for i in range(0, len(datacopied)):
         if datacopied[i][1] in my_dict:
             my_dict[datacopied[i][1]].append(datacopied[i][0])
+            my_dict2[datacopied[i][1]].append(datacopied[i][2])
         
-
+    merged_dict = {}
+    for key in my_dict.keys():
+        merged_dict[key] = zip(my_dict[key], my_dict2[key])
    
-    return render_template('clubs.html', title='Player',xxx=my_dict, country=my_dict, clubn=my_dict)
+    return render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
 
 @app.route("/clubs_game/<int:club_id>")
 def clubs_game(club_id=3):

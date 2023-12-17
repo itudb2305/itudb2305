@@ -14,8 +14,10 @@
                 width: 50%;
             }
         </style>
+        
 
         <ul id="country-filter">
+
             {% for key, values in country.items() %}
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
@@ -27,8 +29,8 @@
                         <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <ul>
-                                    {% for value in values %}
-                                        <li>{{ value }}</li>
+                                    {% for value1, value0 in values%}
+                                        <a href="{{ url_for('clubs_game', club_id=value0) }}"><li> {{ value1 }} </li></a>
                                     {% endfor %}
                                 </ul>
                             </div>
