@@ -103,12 +103,21 @@ def clubgame_list(club_id):
     cursor = connection.cursor()
 
     statement =  '''
-                    SELECT c1.clubs_name as club_name, c2.clubs_name AS opponent_name,
-                    cg.own_goals as goal_for, cg.opponent_goals AS goal_against,
-                    cg.own_manager_name, cg.opponent_manager_name
-                    FROM futbalmania.club_games AS cg
-                    JOIN clubs c1 ON cg.club_id = c1.club_id  
-                    JOIN clubs c2 ON cg.opponent_id = c2.club_id
+                    SELECT 
+                        c1.clubs_name as club_name,
+                        c2.clubs_name AS opponent_name,
+                        cg.own_goals as goal_for,
+                        cg.opponent_goals AS goal_against,
+                        cg.own_manager_name,
+                        cg.opponent_manager_name,
+                        CASE 
+                            WHEN cg.hosting = 'Home' THEN c1.stadium_name
+                            ELSE c2.stadium_name
+                        END AS stadium_name
+                    FROM 
+                        futbalmania.club_games AS cg
+                        JOIN clubs c1 ON cg.club_id = c1.club_id  
+                        JOIN clubs c2 ON cg.opponent_id = c2.club_id
                     WHERE c1.club_id = %s; 
                 '''
     cursor.execute(statement, (club_id, ))
@@ -235,7 +244,8 @@ def get_transfer_list(request):
 
 def get_competition_country(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
+            #connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             country = request.form.get('country')
 

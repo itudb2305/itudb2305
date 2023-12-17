@@ -16,7 +16,7 @@ def player():
 
 @app.route("/clubs")
 def clubs():
-
+    #kka
     data = club_list()
     datacopied = []
     country = []
@@ -46,7 +46,8 @@ def clubs():
         if datacopied[i][1] in my_dict:
             my_dict[datacopied[i][1]].append(datacopied[i][0])
             my_dict2[datacopied[i][1]].append(datacopied[i][2])
-        
+
+            
     merged_dict = {}
     for key in my_dict.keys():
         merged_dict[key] = zip(my_dict[key], my_dict2[key])
