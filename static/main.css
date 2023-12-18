@@ -244,6 +244,12 @@ section {
     background-color: lightgray;
 }
 
+.add_game{
+    padding-left: 22%;
+    margin-left: 50px;
+    width: 92%;
+}
+
 .player-link {
     color: black; 
     font-weight: bold; 

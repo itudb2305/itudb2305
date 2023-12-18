@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request , session ,redirect, url_for, flash
 import random
+import requests
 from data_base import *
 import random
 
@@ -190,8 +191,14 @@ def competitions():
     else:
         return render_template('competitions.html', title='Competitions', competition=None)
 
-@app.route("/games")
+@app.route("/games", methods=['POST', 'GET'])
 def games():
+
+    if request.method == 'POST': #For adding new games
+        all_form_data = request.form
+        requests.post( url_for('games_add', _external=True), all_form_data )
+        return redirect( url_for('games') ) 
+
     game_competitions_list = request.args.getlist('comp')
     game_season_list = request.args.getlist('game_season')
     game_rounds_list = request.args.getlist('game_rounds')
@@ -233,6 +240,23 @@ def games_delete():
     games_delete_game( int(game_id) )
 
     return redirect( request.headers.get("Referer") ) 
+
+@app.route("/games_add", methods =['POST', 'GET'])
+def games_add():
+    
+    game_datas = request.form
+    
+    games_add_game(game_datas)
+
+    return redirect( url_for('games') ) 
+
+@app.route("/games_details")
+def games_details():
+    game_id = int( request.args.get("game_id") )
+
+    #still going
+
+    return render_template('game_details.html')
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():

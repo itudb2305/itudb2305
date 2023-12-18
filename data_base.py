@@ -231,6 +231,67 @@ def games_delete_game(game_id):
 
     return True
 
+def games_add_game(game_datas):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
+        print("a")
+        print(game_datas["home_club_name"])
+        print(game_datas["away_club_name"])
+
+        cursor.execute(check_club_statement %(game_datas["home_club_name"]) )
+        home_name = cursor.fetchone()
+        home_id = home_name[0]
+        print( type(home_id) )
+
+        cursor.execute(check_club_statement %(game_datas["away_club_name"]) )
+        away_name = cursor.fetchone()
+        away_id = away_name[0]
+        print("c")
+        print(away_id)
+
+        if not home_id or not away_id:
+            print("fuck")
+            print(home_id)
+            print(away_id)
+            raise ValueError('Non-Existing Club(s)')
+        
+        max_game_id_statement = """Select game_id from games order by game_id DESC limit 1;"""
+
+        cursor.execute(max_game_id_statement)
+        max_name = cursor.fetchone()
+        new_id = max_name[0] + 1
+        
+        insertion_statement = """INSERT INTO games(game_id, competition_id, season, games_round, games_date, home_club_id, away_club_id, home_club_goals, away_club_goals, home_club_position, away_club_position, home_club_manager_name, away_club_manager_name, stadium, attendance, referee, url, home_club_formation, away_club_formation, home_club_name, away_club_name, games_aggregate, competition_type)
+                                 VALUES(%s, '%s', %s, '%s', '%s', %s, %s, %s, %s, %s, %s, '%s', '%s', '%s', %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');"""
+
+        cursor.execute(insertion_statement %(new_id, game_datas["competition_id"], game_datas["season"],  game_datas["game_round"],
+                                             game_datas["date"], home_id, away_id, game_datas["home_club_goals"],
+                                             game_datas["away_club_goals"], game_datas["home_club_position"],
+                                             game_datas["away_club_position"], game_datas["home_club_manager"],
+                                             game_datas["away_club_manager"], game_datas["stadium"], game_datas["attendance"],
+                                             game_datas["referee"], "", game_datas["home_club_formation"],
+                                             game_datas["away_club_formation"], game_datas["home_club_name"],
+                                             game_datas["away_club_name"], "", game_datas["competition_type"]))
+        
+        connection.commit()
+        print("done")
+
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database error - Add Games")
+    except ValueError:
+        connection.rollback()
+        print('Non-Existing Club(s)')
+    finally:
+        cursor.close()
+        connection.close()
+
+    return True
+
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
