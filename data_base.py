@@ -65,7 +65,12 @@ def player_t():
 
     cursor = connection.cursor()
 
-    statement = 'SELECT players_name,country_of_citizenship,position FROM players;'
+    statement = """
+    SELECT p.players_name, c.clubs_name ,p.position ,p.country_of_citizenship,p.player_id
+    FROM players p
+    INNER JOIN clubs c ON p.current_club_id = c.club_id
+    ORDER BY p.players_name;
+     """
 
     cursor.execute(statement)
     result_2 = cursor.fetchall()
@@ -145,7 +150,7 @@ def game_get_clubs():
 
     return seasons
 
-def game_get_games():
+def game_get_games(game_competitions_list, game_season_list, game_rounds_list, game_clubs_list, page_num):
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
     cursor = connection.cursor()
@@ -153,10 +158,51 @@ def game_get_games():
     statement = """SELECT A.game_id, B.competitions_name, A.games_round, A.home_club_name, A.home_club_goals, A.away_club_goals, A.away_club_name, A.games_date
                     FROM futbalmania.games A
                     JOIN futbalmania.competitions B on A.competition_id = B.competition_id
+                    %s
                     order by games_date DESC
-                    LIMIT 20 OFFSET 0;"""
+                    LIMIT 20 OFFSET %s;"""
 
-    cursor.execute(statement)
+    where_statement = "WHERE TRUE" #By default is true, so we can concatenate "AND (<condition>)" for all category without check
+    comp_sel = ""
+    game_season_sel = ""
+    game_rounds_sel = ""
+    game_clubs_sel = ""
+
+    if len(game_competitions_list) == 0: #DONE
+        comp_sel = "TRUE"
+    else:
+        comp_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_competitions_list:
+            comp_sel = comp_sel + " OR A.competition_id = '%s' " %str(x)
+    where_statement = where_statement + " AND ( " + comp_sel + ")"
+
+    if len(game_season_list) == 0: #DONE
+        game_season_sel = "TRUE"
+    else:
+        game_season_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_season_list:
+            game_season_sel = game_season_sel + " OR A.season = %s " %str(x)
+    where_statement = where_statement + " AND ( " + game_season_sel + ")"
+
+    if len(game_rounds_list) == 0: #DONE
+        game_rounds_sel = "TRUE"
+    else:
+        game_rounds_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_rounds_list:
+            game_rounds_sel = game_rounds_sel + " OR A.games_round = '%s' " %str(x)
+    where_statement = where_statement + " AND ( " + game_rounds_sel + ")"
+
+    if len(game_clubs_list) == 0: #DONE
+        game_clubs_sel = "TRUE"
+    else:
+        game_clubs_sel = "FALSE" # 0 OR <variable> = <variable>; we can use this
+        for x in game_clubs_list:
+            game_clubs_sel = game_clubs_sel + " OR A.home_club_id = %s OR A.away_club_id = %s " %(str(x), str(x))
+    where_statement = where_statement + " AND ( " + game_clubs_sel + ")"
+
+    print(where_statement)
+
+    cursor.execute(statement %(where_statement, str( (page_num - 1)*20 ) ) )
     games = cursor.fetchall()
     result = [list(comp) for comp in games]
 
@@ -166,12 +212,68 @@ def game_get_games():
     
     return result
 
+def games_delete_game(game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """DELETE FROM games WHERE game_id = %s;"""
+
+        cursor.execute(statement %str(game_id))
+        connection.commit()
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database error")
+    finally:
+        cursor.close()
+        connection.close()
+
+    return True
+
+def get_available_countries():
+        connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+        statement = """SELECT DISTINCT country_of_citizenship FROM players ORDER BY country_of_citizenship;"""
+        cursor.execute(statement)
+        countries = [country[0] for country in cursor.fetchall()]
+        cursor.close()
+        connection.close()
+        return countries
+
+def get_available_positions():
+        connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+        statement = "SELECT DISTINCT position FROM players ORDER BY position;"
+        cursor.execute(statement)
+        positions = [position[0] for position in cursor.fetchall()]
+        cursor.close()
+        connection.close()
+        return positions
+
+def get_available_clubs():
+        connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+        statement = "SELECT DISTINCT c.clubs_name FROM players p JOIN clubs c ON p.current_club_id = c.club_id ORDER BY c.clubs_name;"
+        cursor.execute(statement)
+        clubs = [club[0] for club in cursor.fetchall()]
+        cursor.close()
+        connection.close()
+        return clubs
+
 def question_game():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
     
     cursor = connection.cursor(dictionary=True)
 
-    statement = 'SELECT players_name,country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2017 ORDER BY RAND() LIMIT 1;'
+    statement = """SELECT players_name,country_of_citizenship 
+    FROM players 
+    WHERE highest_market_value_in_eur >= 50000000 
+    AND last_season > 2017 
+    AND players_name IS NOT NULL 
+    AND country_of_citizenship IS NOT NULL 
+    ORDER BY RAND() 
+    LIMIT 1;"""
    
     cursor.execute(statement)
     result_3 = cursor.fetchall()
@@ -185,7 +287,13 @@ def random_value():
     
     cursor = connection.cursor(dictionary=True)
 
-    statement = 'SELECT country_of_citizenship FROM players WHERE highest_market_value_in_eur >= 50000000 AND last_season > 2015 ORDER BY RAND() LIMIT 1;'
+    statement = """ SELECT country_of_citizenship 
+    FROM players 
+    WHERE highest_market_value_in_eur >= 50000000 
+    AND last_season > 2015 
+    AND country_of_citizenship IS NOT NULL
+    ORDER BY RAND() 
+    LIMIT 1;"""
    
     cursor.execute(statement)
     random_value = cursor.fetchall()
@@ -194,6 +302,79 @@ def random_value():
     connection.close()
 
     return random_value
+
+def get_player_details(player_id):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """
+        SELECT first_name, last_name, players_name, last_season, country_of_birth, city_of_birth, 
+               country_of_citizenship, date_of_birth, sub_position, position, foot, height_in_cm, 
+               market_value_in_eur, highest_market_value_in_eur, contract_expiration_date, 
+               agent_name, image_url, competitions_name , current_club_name,player_id ,current_club_id, 
+               player_code,current_club_domestic_competition_id
+        FROM players
+        INNER JOIN competitions ON players.current_club_domestic_competition_id = competitions.competition_id
+        WHERE player_id = %s;
+    """
+
+    cursor.execute(statement, (player_id,))
+    player_data = cursor.fetchone()
+
+
+    if player_data:
+        player_data = list(player_data)
+
+        if isinstance(player_data[17], str):
+            player_data[17] = player_data[17].replace('-', ' ')
+
+        player_info = {
+            "first_name": player_data[0],
+            "last_name": player_data[1],
+            "players_name": player_data[2],
+            "last_season": player_data[3],
+            "country_of_birth": player_data[4],
+            "city_of_birth": player_data[5],
+            "country_of_citizenship": player_data[6],
+            "date_of_birth": player_data[7],
+            "sub_position": player_data[8],
+            "position": player_data[9],
+            "foot": player_data[10],
+            "height_in_cm": player_data[11],
+            "market_value_in_eur": player_data[12],
+            "highest_market_value_in_eur": player_data[13],
+            "contract_expiration_date": player_data[14],
+            "agent_name": player_data[15],
+            "image_url": player_data[16],
+            "competitions_name": player_data[17],
+            "current_club_name": player_data[18],
+            "player_id": player_data[19],
+            "current_club_id": player_data[20],
+            "player_code": player_data[21],
+            "current_club_domestic_competition_id": player_data[22]
+        }
+    else:
+        player_info = None
+
+    cursor.close()
+    connection.close()
+    return player_info
+
+def update_player_details(player_id, **updated_data):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    update_parts = [f"{key} = %s" for key in updated_data]
+    update_statement = f"UPDATE players SET {', '.join(update_parts)} WHERE player_id = %s;"
+
+    update_values = tuple(updated_data.values()) + (player_id,)
+
+    cursor.execute(update_statement, update_values)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
 
 def get_transfer_list(request):
         if request.method == 'POST':
@@ -260,3 +441,39 @@ def get_competition_country(request):
             cursor.close()
             connection.close()    
             return result
+        
+def update_value(request):
+        if request.method == 'POST':
+            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            cursor = connection.cursor()
+
+            name = request.form.get('name')
+            surname = request.form.get('surname')
+            team = request.form.get('team')
+            value = int(request.form.get('value'))
+            team_pattern = f"%{team}%"
+
+            statement = """ SELECT A.player_id, A.current_club_id, A.current_club_domestic_competition_id 
+                            FROM futbalmania.players A
+                            WHERE A.first_name = %s
+                            AND A.last_name = %s
+                            AND A.current_club_name LIKE %s
+                            LIMIT 1;"""
+            
+            cursor.execute(statement, (name, surname, team_pattern))
+            result =cursor.fetchall()
+            if result:
+                print(result[0][0], value, result[0][1], result[0][2])
+            else:
+                print("No results found.")
+
+            statement2 = """ INSERT INTO futbalmania.player_valuations 
+                            VALUES (%s, YEAR(CURDATE()), NOW(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL - WEEKDAY(CURDATE()) DAY),
+                            %s, 1, %s, %s); 
+                            """
+            
+            cursor.execute(statement2, (result[0][0], value, result[0][1], result[0][2]))
+            connection.commit()
+            cursor.close()
+            connection.close() 
+    
