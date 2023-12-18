@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request , session
+from flask import Flask, render_template, url_for, request , session ,redirect, url_for, flash
 import random
 from data_base import *
 import random
@@ -16,7 +16,7 @@ def home():
 @app.route("/player")
 def player():
     search_query = request.args.get('search', '')
-    country_filter = request.args.get('country')
+    country_filter = request.args.get('country', '')
     position_filter = request.args.get('position')
     club_filter = request.args.get('club')
     page = request.args.get('page', 1, type=int)
@@ -31,14 +31,14 @@ def player():
     if search_query:
         player_values = [player for player in player_values if search_query.lower() in player[0].lower()]
 
-    if country_filter:
-        player_values = [player for player in player_values if player[1] == country_filter]
-
+    if club_filter:
+        player_values = [player for player in player_values if player[1] == club_filter]
+    
     if position_filter:
         player_values = [player for player in player_values if player[2] == position_filter]
-
-    if club_filter:
-        player_values = [player for player in player_values if player[3] == club_filter]
+      
+    if country_filter:
+        player_values = [player for player in player_values if player[3] == country_filter] 
 
     total = len(player_values)
     start = (page - 1) * per_page
@@ -48,6 +48,48 @@ def player():
     total_pages = total // per_page + (1 if total % per_page > 0 else 0)
     return render_template('player.html', title='Player', result=players_on_page,  countries=available_countries, positions=available_positions, clubs=available_clubs ,page=page, total_pages=total_pages)
 
+@app.route("/player/<int:player_id>")
+def player_details(player_id):
+    player_info = get_player_details(player_id)
+
+    if not player_info:
+        return "Player not found", 404
+
+    return render_template('player_details.html', player=player_info)
+
+@app.route("/player/edit/<int:player_id>", methods=['GET', 'POST'])
+def edit_player(player_id):
+    player_info = get_player_details(player_id)
+    if not player_info:
+        flash('Player not found.', 'error')
+        return redirect(url_for('player'))
+
+    if request.method == 'POST':
+        updated_data = {
+                'first_name': request.form.get('first_name'),
+                'last_name': request.form.get('last_name'),
+                'players_name': request.form.get('players_name'),
+                'last_season': request.form.get('last_season'),
+                'player_code': request.form.get('player_code'),  
+                'country_of_birth': request.form.get('country_of_birth'),
+                'city_of_birth': request.form.get('city_of_birth'),
+                'country_of_citizenship': request.form.get('country_of_citizenship'),
+                'date_of_birth': request.form.get('date_of_birth'),  
+                'sub_position': request.form.get('sub_position'),
+                'position': request.form.get('position'),
+                'foot': request.form.get('foot'),
+                'height_in_cm': request.form.get('height_in_cm'),  
+                'market_value_in_eur': request.form.get('market_value_in_eur'),  
+                'highest_market_value_in_eur': request.form.get('highest_market_value_in_eur'),  
+                'contract_expiration_date': request.form.get('contract_expiration_date'),  
+                'agent_name': request.form.get('agent_name'),
+                'image_url': request.form.get('image_url'),
+        }
+        
+        update_player_details(player_id, **updated_data)
+        return redirect(url_for('player_details', player_id=player_id))
+
+    return render_template('edit_player.html', player=player_info)
 
 
 
