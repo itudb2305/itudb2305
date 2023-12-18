@@ -178,6 +178,25 @@ def game_get_games(game_competitions_list, game_season_list, game_rounds_list, g
     
     return result
 
+def games_delete_game(game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """DELETE FROM games WHERE game_id = %s;"""
+
+        cursor.execute(statement %str(game_id))
+        connection.commit()
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database error")
+    finally:
+        cursor.close()
+        connection.close()
+
+    return True
+
 def get_available_countries():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request , session
+from flask import Flask, render_template, url_for, request , session, redirect
 import random
 from data_base import *
 import random
@@ -167,6 +167,14 @@ def games():
                             game_clubs = game_clubs,
                             game_games = game_games,
                             page_num = page_num)
+
+@app.route("/games_delete")
+def games_delete():
+    game_id = request.args.get("game_id")
+    
+    games_delete_game( int(game_id) )
+
+    return redirect( request.headers.get("Referer") ) 
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():

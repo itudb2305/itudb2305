@@ -38,29 +38,33 @@
       </form>
     </div>
 
-    <table class = "game_table"> <!--This part is placeholder for tables-->
-      <tr>
-        <th>Competition</th>
-        <th>Game Round</th>
-        <th>Home Club</th>
-        <th>Scores</th>
-        <th>Away Club</th>
-        <th>Date</th>
-        <th>Details</th>
-        <th>Delete</th>
-      </tr>
-      {% for value in game_games %}
-      <tr>
-        <td>{{value[1]}}</td>
-        <td>{{value[2]}}</td>
-        <td>{{value[3]}}</td>
-        <td>{{value[4]}} - {{value[5]}}</td>
-        <td>{{value[6]}}</td>
-        <td>{{value[7]}}</td>
-        <td><input type="submit" class="Details" value="Details" /></td>
-        <td><input type="submit" class="Delete" value="Delete" /></td>
-      </tr>
-      {% endfor %}
+    <table class="game_table"> <!--This part is placeholder for tables-->
+      <thead>
+        <tr>
+          <th>Competition</th>
+          <th>Game Round</th>
+          <th>Home Club</th>
+          <th>Scores</th>
+          <th>Away Club</th>
+          <th>Date</th>
+          <th>Details</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody class="game_table_body">
+        {% for value in game_games %}
+        <tr>
+          <td>{{value[1]}}</td>
+          <td>{{value[2]}}</td>
+          <td>{{value[3]}}</td>
+          <td>{{value[4]}} - {{value[5]}}</td>
+          <td>{{value[6]}}</td>
+          <td>{{value[7]}}</td>
+          <td><input type="submit" class="Details" value="Details" /></td>
+          <td><a href="./games_delete?game_id={{value[0]}}"><input type="submit" class="Delete" value="Delete" /></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
 
     <script>
