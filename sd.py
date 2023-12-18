@@ -210,6 +210,14 @@ def games():
                             game_games = game_games,
                             page_num = page_num)
 
+@app.route("/games_delete")
+def games_delete():
+    game_id = request.args.get("game_id")
+    
+    games_delete_game( int(game_id) )
+
+    return redirect( request.headers.get("Referer") ) 
+
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
     if request.method == 'POST':
