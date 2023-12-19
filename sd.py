@@ -134,14 +134,78 @@ def clubs():
    
     return render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
 
-@app.route("/clubs_game/<int:club_id>")
+#kaleab
+@app.route("/clubs_game?club_id=3")
+@app.route("/clubs_game")
 def clubs_game(club_id=3):
-    club_games = clubgame_list(club_id)
-
-    
+    club_id = request.args.get('club_id', default=3, type=int)
+    club_games = clubgame_list(club_id=3)
     return render_template('clubs_game.html', title='Clubs Games', result=club_games)
 
+#kaleab
+@app.route("/leagues")
+def leagues():
+    data = get_leagues()
 
+    competition_id =list(set([field[6] for field in data]))
+    competition_score = []
+    #competition_id = [27]
+    templist = []
+    for i in competition_id:
+        club_name = ""
+        points = 0 #
+        scored_for = 0 #
+        scored_against = 0 #
+        netscore = 0
+        match_played = 0 #
+        win = 0#
+        draw = 0#
+        lose = 0 #
+        for j in data:
+            if i == j[5]: 
+                club_name = j[9]
+                if j[7] > j[8]:
+                    point = 3
+                    win += 1
+                    
+                elif j[7] == j[8]:
+                    point = 1
+                    draw += 1
+                else:
+                    point = 0
+                    lose += 1
+                
+                match_played += 1
+                scored_for += j[7]
+                scored_against += j[8]
+                points += point
+
+                
+            elif i == j[6]:
+                club_name = j[10]
+                if j[7] < j[8]:
+                    point = 3
+                    win += 1
+                elif j[7] == j[8]:
+                    point = 1
+                    draw += 1
+                else:
+                    point = 0
+                    lose += 1
+                match_played += 1
+                scored_for += j[8]
+                scored_against += j[7]
+                points += point
+        netscore = scored_for - scored_against
+        templist.append([club_name, match_played, win, draw, lose, scored_for, scored_against, netscore, points])
+               
+    competition_id.append(point)
+                    
+    templist = (sorted(templist, key=lambda x: (x[-1], x[-2])))
+    templist = templist[::-1]
+    
+    #competition_score.append([j[6], 3, 0, 0])
+    return render_template('leagues.html', title='Leagues', result=templist)
 @app.route("/quiz_game", methods=['GET', 'POST'])
 def quiz_game():
     if 'score' not in session:

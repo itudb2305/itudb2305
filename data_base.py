@@ -538,3 +538,31 @@ def update_value(request):
             cursor.close()
             connection.close() 
     
+def get_leagues():
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """ 
+                    SELECT 
+                        game_id,
+                        competition_id,
+                        season,
+                        games_round,
+                        games_date,
+                        home_club_id,
+                        away_club_id,
+                        home_club_goals,
+                        away_club_goals,
+                        c1.clubs_name AS home_club_name,
+                        c2.clubs_name AS away_club_name
+                        FROM games
+                        JOIN clubs c1 ON c1.club_id = games.home_club_id
+                        JOIN clubs c2 ON c2.club_id = games.away_club_id
+                    where competition_id = "L1" AND  
+                    season = "2022" ;
+         """
+        cursor.execute(statement)
+        result =cursor.fetchall()
+        cursor.close()
+        connection.close()    
+        return result
