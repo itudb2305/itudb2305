@@ -295,7 +295,7 @@ def games_add_game(game_datas):
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
-        statement = """SELECT DISTINCT country_of_citizenship FROM players ORDER BY country_of_citizenship;"""
+        statement = """SELECT DISTINCT country_of_citizenship FROM players WHERE country_of_citizenship IS NOT NULL AND country_of_citizenship != '' ORDER BY country_of_citizenship;"""
         cursor.execute(statement)
         countries = [country[0] for country in cursor.fetchall()]
         cursor.close()
@@ -305,7 +305,7 @@ def get_available_countries():
 def get_available_positions():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
-        statement = "SELECT DISTINCT position FROM players ORDER BY position;"
+        statement = "SELECT DISTINCT position FROM players WHERE position IS NOT NULL AND position != '' ORDER BY position;"
         cursor.execute(statement)
         positions = [position[0] for position in cursor.fetchall()]
         cursor.close()
@@ -315,7 +315,7 @@ def get_available_positions():
 def get_available_clubs():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
-        statement = "SELECT DISTINCT c.clubs_name FROM players p JOIN clubs c ON p.current_club_id = c.club_id ORDER BY c.clubs_name;"
+        statement = "SELECT DISTINCT c.clubs_name FROM players p JOIN clubs c ON p.current_club_id = c.club_id WHERE c.clubs_name IS NOT NULL AND c.clubs_name != '' ORDER BY c.clubs_name;"
         cursor.execute(statement)
         clubs = [club[0] for club in cursor.fetchall()]
         cursor.close()
@@ -343,6 +343,8 @@ def question_game():
 
     return result_3
 
+
+
 def random_value():
     connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
     
@@ -353,6 +355,7 @@ def random_value():
     WHERE highest_market_value_in_eur >= 50000000 
     AND last_season > 2015 
     AND country_of_citizenship IS NOT NULL
+    AND country_of_citizenship != '' 
     ORDER BY RAND() 
     LIMIT 1;"""
    
@@ -434,6 +437,53 @@ def update_player_details(player_id, **updated_data):
     connection.commit()
     cursor.close()
     connection.close()
+
+def insert_new_player(new_player_data):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT MAX(player_id) FROM players;")
+    max_id_result = cursor.fetchone()
+    max_id = max_id_result[0] if max_id_result[0] is not None else 0
+    next_id = max_id + 1
+    new_player_data['player_id'] = next_id
+
+    current_club_name = new_player_data.get('current_club_name')
+    cursor.execute("SELECT club_id, domestic_competition_id FROM clubs WHERE clubs_name = %s", (current_club_name,))
+    club_info = cursor.fetchone()
+
+    if club_info:
+        new_player_data['current_club_id'], new_player_data['current_club_domestic_competition_id'] = club_info
+
+    columns = ', '.join(new_player_data.keys())
+    placeholders = ', '.join(['%s'] * len(new_player_data))
+    insert_statement = f"INSERT INTO players ({columns}) VALUES ({placeholders});"
+
+    insert_values = tuple(new_player_data.values())
+
+    
+    cursor.execute(insert_statement, insert_values)
+    connection.commit()
+    
+    cursor.close()
+    connection.close()
+
+
+def delete_player(player_id):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """DELETE FROM players WHERE player_id = %s;"""
+
+    cursor.execute(statement, (player_id,))
+    connection.commit()
+    
+    cursor.close()
+    connection.close()
+
+    return True
+
+
 
 
 

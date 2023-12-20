@@ -47,7 +47,7 @@ def player():
     players_on_page = player_values[start:end]
 
     total_pages = total // per_page + (1 if total % per_page > 0 else 0)
-    return render_template('player.html', title='Player', result=players_on_page,  countries=available_countries, positions=available_positions, clubs=available_clubs ,page=page, total_pages=total_pages)
+    return render_template('player.html', title='Player', result=players_on_page,  countries=available_countries, positions=available_positions, clubs=available_clubs ,page=page, total_pages=total_pages,search_query=search_query, country_filter=country_filter, position_filter=position_filter, club_filter=club_filter)
 
 @app.route("/player/<int:player_id>")
 def player_details(player_id):
@@ -57,6 +57,43 @@ def player_details(player_id):
         return "Player not found", 404
 
     return render_template('player_details.html', player=player_info)
+
+@app.route("/player/add", methods=['GET', 'POST'])
+def add_player():
+    if request.method == 'POST':
+        new_player_data = {
+                'first_name': request.form.get('first_name'),
+                'last_name': request.form.get('last_name'),
+                'players_name': request.form.get('players_name'),
+                'last_season': request.form.get('last_season'),
+                'player_code': request.form.get('player_code'),  
+                'country_of_birth': request.form.get('country_of_birth'),
+                'city_of_birth': request.form.get('city_of_birth'),
+                'country_of_citizenship': request.form.get('country_of_citizenship'),
+                'date_of_birth': request.form.get('date_of_birth'),  
+                'sub_position': request.form.get('sub_position'),
+                'position': request.form.get('position'),
+                'foot': request.form.get('foot'),
+                'height_in_cm': request.form.get('height_in_cm'),  
+                'market_value_in_eur': request.form.get('market_value_in_eur'),  
+                'highest_market_value_in_eur': request.form.get('highest_market_value_in_eur'),  
+                'contract_expiration_date': request.form.get('contract_expiration_date'),  
+                'agent_name': request.form.get('agent_name'),
+                'image_url': request.form.get('image_url'),
+                'current_club_name': request.form.get('current_club_name')
+
+        }      
+        insert_new_player(new_player_data)
+        return redirect(url_for('player'))
+    
+    player = {'first_name': '', 'last_name': '', 'players_name': '', 'last_season': '', 'player_code': '', 'country_of_birth': '', 'city_of_birth': '', 'country_of_citizenship': '', 'date_of_birth': '', 'sub_position': '', 'position': '', 'foot': '', 'height_in_cm': '', 'market_value_in_eur': '', 'highest_market_value_in_eur': '', 'contract_expiration_date': '', 'agent_name': '', 'image_url': '', 'current_club_name': ''}
+
+      
+
+    return render_template('add_player.html', player=player)
+
+
+
 
 @app.route("/player/edit/<int:player_id>", methods=['GET', 'POST'])
 def edit_player(player_id):
@@ -85,12 +122,23 @@ def edit_player(player_id):
                 'contract_expiration_date': request.form.get('contract_expiration_date'),  
                 'agent_name': request.form.get('agent_name'),
                 'image_url': request.form.get('image_url'),
+                'current_club_name': request.form.get('current_club_name')
         }
         
         update_player_details(player_id, **updated_data)
         return redirect(url_for('player_details', player_id=player_id))
 
     return render_template('edit_player.html', player=player_info)
+
+
+@app.route("/player/delete/<int:player_id>")
+def player_delete(player_id):
+    delete_player(player_id)
+    return redirect(url_for('player'))
+
+
+
+
 
 
 
