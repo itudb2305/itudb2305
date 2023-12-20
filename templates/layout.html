@@ -17,6 +17,7 @@
     <nav>
         <ul>
             <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="./leagues">Leagues</a></li>
             <li><a href="./competitions">Competitions</a></li>
             <li><a href="{{ url_for('player') }}">Player</a></li>
             <li><a href="./games">Games</a></li>
@@ -24,7 +25,7 @@
             <li><a href="./transfer">Transfer</a></li>
             <li><a href="./update_market_value">Update Market Value</a></li>
             <li><a href="./clubs">Clubs</a></li>
-            <li><a href="./clubs_game">Game Result</a></li>
+            <li><a href="{{ url_for('clubs_game', club_id=3) }}">Game Result</a></li>
         </ul>
     </nav>
     </header>
