@@ -578,15 +578,51 @@ def update_value(request):
             else:
                 print("No results found.")
 
-            statement2 = """ INSERT INTO futbalmania.player_valuations 
-                            VALUES (%s, YEAR(CURDATE()), NOW(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL - WEEKDAY(CURDATE()) DAY),
-                            %s, 1, %s, %s); 
-                            """
-            
-            cursor.execute(statement2, (result[0][0], value, result[0][1], result[0][2]))
+            if 'insert' in request.form:
+                statement2 = """ INSERT INTO futbalmania.player_valuations 
+                                VALUES (%s, YEAR(CURDATE()), NOW(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL - WEEKDAY(CURDATE()) DAY),
+                                %s, 1, %s, %s); 
+                                """
+                cursor.execute(statement2, (result[0][0], value, result[0][1], result[0][2]))
+
+            elif 'update' in request.form:
+                statement2 = """UPDATE futbalmania.player_valuations 
+                                SET market_value_in_eur = %s
+                                WHERE player_id = %s AND current_club_id = %s AND player_club_domestic_competition_id = %s
+                                AND player_valuations_date = (
+                                SELECT MAX(player_valuations_date) 
+                                FROM (
+                                SELECT player_valuations_date
+                                FROM futbalmania.player_valuations
+                                WHERE player_id = %s AND current_club_id = %s AND player_club_domestic_competition_id=%s 
+                                ) AS subquery
+                                );
+                                 """
+                cursor.execute(statement2, (value, result[0][0], result[0][1], result[0][2], result[0][0], result[0][1], result[0][2]))
+                
+            elif 'delete' in request.form:
+                statement2 =  """   DELETE FROM futbalmania.player_valuations
+                                    WHERE player_id = %s
+                                    AND current_club_id = %s
+                                    AND player_club_domestic_competition_id = %s
+                                    AND market_value_in_eur = %s
+                                    AND player_valuations_date = (
+                                        SELECT MAX(player_valuations_date)
+                                        FROM (
+                                        SELECT player_valuations_date
+                                        FROM futbalmania.player_valuations
+                                        WHERE player_id = %s
+                                            AND current_club_id = %s
+                                            AND player_club_domestic_competition_id = %s
+                                        ) AS subquery
+                                    );
+                                 """
+                cursor.execute(statement2, (result[0][0], result[0][1], result[0][2], value, result[0][0], result[0][1], result[0][2]))
+
             connection.commit()
             cursor.close()
             connection.close() 
+    
     
 def get_leagues():
         connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
