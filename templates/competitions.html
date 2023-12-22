@@ -37,12 +37,12 @@
                     <th>Type</th>
                     <th>Country Name</th>
                     <th>ID</th>
-                    <th>Action</th>
+                    <th>Ban Competition</th>
                 </tr>
             </thead>
             <tbody>
                 {% for each in competition %}
-                <form method="post" action="{{ url_for('ban_competition') }}">
+                <form method="post" action="{{ url_for('change_competition') }}">
                     <tr>
                         <td>{{ each[0] }}</td>
                         <td>{{ each[1] }}</td>
@@ -51,6 +51,12 @@
                         <td>
                             <input type="hidden" name="id" value="{{ each[3] }}">
                             <button type="submit" class="ban_id" name = "ban_id">Ban</button>
+                        </td>
+                        <td>
+                            <input type="hidden" name="id" value="{{ each[3] }}">
+                            <label for="name">New Name</label>
+                            <input type="name" id="name", name="name">
+                            <button type="submit" class="new_name" name = "new_name">Change Name</button>
                         </td>
                     </tr>
                 </form>

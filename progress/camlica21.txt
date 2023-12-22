@@ -4,4 +4,4 @@ Fourth week: Added a transfer.html page and the corresponding python code to sea
 Fifth week: Fixed the transfer page and python code. Added age filtering and showed more columns in the search results. Edited the competitions table, now the table shows the list of competitions belonging to the selected country.
 sixth week: Created a update_market_value html page and the corresponding flask code that updates the market value of a player (inserts a new row to the player_valuations table).
 sixth week: Added two more options inside update_market_value html page, so that the users now can correct the last valuation and also delete it.
-Added create competition. Added ban competition option.
+Added create competition. Added ban competition option. Added change competition name option.

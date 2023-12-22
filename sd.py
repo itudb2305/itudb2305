@@ -303,10 +303,10 @@ def competitions():
     else:
         return render_template('competitions.html', title='Competitions', competition=None)
     
-@app.route('/ban_competition', methods=['POST'])
-def ban_competition():
+@app.route('/change_competition', methods=['POST'])
+def change_competition():
         if request.method == 'POST':
-            ban_tournament(request)
+            change_tournament(request)
             return render_template('competitions.html', title='Competitions')
         else:
             return render_template('competitions.html', title='Competitions')
