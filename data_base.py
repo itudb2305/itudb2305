@@ -536,8 +536,8 @@ def get_transfer_list(request):
 
 def get_competition_country(request):
         if request.method == 'POST':
-            #connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
-            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
+            #connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             country = request.form.get('country')
 
@@ -553,6 +553,31 @@ def get_competition_country(request):
             connection.close()    
             return result
         
+def create_competition(request):
+        if request.method == 'POST':
+            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            cursor = connection.cursor()
+            id = request.form.get('id')
+            name = request.form.get('name')
+            statement = """ INSERT INTO futbalmania.competitions
+                            (competition_id,
+                            competition_code,
+                            competitions_name,
+                            sub_type,
+                            competitions_type,
+                            country_id,
+                            country_name,
+                            domestic_league_code,
+                            confederation,
+                            url)
+                            VALUES
+                            (%s, %s, %s, "europa_league", "international_cup", -1, "europa_league", "", "", "");"""  
+            
+            cursor.execute(statement, (id, name, name))
+            connection.commit()
+            cursor.close()
+            connection.close() 
+
 def update_value(request):
         if request.method == 'POST':
             connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 

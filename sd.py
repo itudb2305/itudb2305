@@ -394,9 +394,13 @@ def update_market_value():
     else:
         return render_template('update_market_value.html', title='Update Market Value')
 
-@app.route("/correct_valuation")
-def correct_valuation():
-    return render_template('correct_valuation.html', title='Correct Valuation')
+@app.route("/create_tournament", methods=['POST', 'GET'])
+def create_tournament():
+    if request.method == 'POST':
+        create_competition(request)
+        return render_template('create_tournament.html', title='Created Tournament')
+    else:
+        return render_template('create_tournament.html', title='Create Tournament')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

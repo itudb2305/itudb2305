@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Create Tournament{% endblock %}
+{% block content %}
+
+<section id="Create Tournament">
+    <h1>Welcome to Create Tournament page</h1>
+    <p>In this page, you can create a tournament</p>
+</section>
+
+<div class="create_tournament">
+    <form method="post", action="{{ url_for('create_tournament') }}">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name">
+
+        <label for="id">Competition ID</label>
+        <input type="text" id="id" name="id">
+
+        <button type="submit" name="create">Create</button>
+    </form>
+</div>
+
+{% endblock %}
