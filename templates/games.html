@@ -70,25 +70,29 @@
     <div class="add_game"> <!--Memento Mori-->
       <button type="button" class="accordion">Add Game</button>
       <div class="game_list">
-          <form action="./games" method="POST">
-            <label>Season: <input type="text" name="season" placeholder="2012, 2013 etc." autocomplete="off"/></label>
-            <label>Game Round: <input type="text" name="game_round" autocomplete="off"/></label>
-            <label>Date: <input type="text" name="date" placeholder="yyyy-mm-dd" autocomplete="off"/></label>
-            <label>Home Club Name: <input type="text" name="home_club_name" required autocomplete="off"/></label>
-            <label>Away Club Name: <input type="text" name="away_club_name" required autocomplete="off"/></label>
-            <label>Home Club Goals: <input type="text" name="home_club_goals" autocomplete="off"/></label>
-            <label>Away Club Goals: <input type="text" name="away_club_goals" autocomplete="off"/></label>
-            <label>Home Club Position: <input type="text" name="home_club_position" autocomplete="off"/></label>
-            <label>Away Club Position: <input type="text" name="away_club_position" autocomplete="off"/></label>
-            <label>Home Club Manager: <input type="text" name="home_club_manager" autocomplete="off"/></label>
-            <label>Away Club Manager: <input type="text" name="away_club_manager" autocomplete="off"/></label>
-            <label>Stadium: <input type="text" name="stadium" autocomplete="off"/></label>
-            <label>Attendance: <input type="text" name="attendance" autocomplete="off"/></label>
-            <label>Referee: <input type="text" name="referee" autocomplete="off"/></label>
-            <label>Home Club Formation: <input type="text" name="home_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
-            <label>Away Club Formation: <input type="text" name="away_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
-            <label>Competition Type: <input type="text" name="competition_type" autocomplete="off"/></label>
-            <label>Competition ID: <input type="text" name="competition_id" autocomplete="off"/></label>
+        <form action="./games" method="POST">
+          <label>Season: <input type="text" name="season" placeholder="2012, 2013 etc." autocomplete="off"/></label>
+          <label>Game Round: <input type="text" name="game_round" autocomplete="off"/></label>
+          <label>Date: <input type="text" name="date" placeholder="yyyy-mm-dd" autocomplete="off"/></label>
+          <label>Home Club Name: <input type="text" name="home_club_name" required autocomplete="off"/></label>
+          <label>Away Club Name: <input type="text" name="away_club_name" required autocomplete="off"/></label>
+          <label>Home Club Goals: <input type="text" name="home_club_goals" autocomplete="off"/></label>
+          <label>Away Club Goals: <input type="text" name="away_club_goals" autocomplete="off"/></label>
+          <label>Home Club Position: <input type="text" name="home_club_position" autocomplete="off"/></label>
+          <label>Away Club Position: <input type="text" name="away_club_position" autocomplete="off"/></label>
+          <label>Home Club Manager: <input type="text" name="home_club_manager" autocomplete="off"/></label>
+          <label>Away Club Manager: <input type="text" name="away_club_manager" autocomplete="off"/></label>
+          <label>Stadium: <input type="text" name="stadium" autocomplete="off"/></label>
+          <label>Attendance: <input type="text" name="attendance" autocomplete="off"/></label>
+          <label>Referee: <input type="text" name="referee" autocomplete="off"/></label>
+          <label>Home Club Formation: <input type="text" name="home_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
+          <label>Away Club Formation: <input type="text" name="away_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
+          <label>Competition Type: <input type="text" name="competition_type" autocomplete="off"/></label>
+          <label>Competition ID: <select name="competition_id" > {% for value in game_competitions %}
+            <option value="{{ value[0] }}">{{ value[1] }}</option>
+            {% endfor %}
+          </select>
+          </label>
             <input type="submit" value="Add">
           </form>
       </div>
