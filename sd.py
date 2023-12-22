@@ -302,6 +302,14 @@ def competitions():
         return render_template('competitions.html', title='Competitions', competition=competition)
     else:
         return render_template('competitions.html', title='Competitions', competition=None)
+    
+@app.route('/ban_competition', methods=['POST'])
+def ban_competition():
+        if request.method == 'POST':
+            ban_tournament(request)
+            return render_template('competitions.html', title='Competitions')
+        else:
+            return render_template('competitions.html', title='Competitions')
 
 @app.route("/games", methods=['POST', 'GET'])
 def games():

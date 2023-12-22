@@ -571,13 +571,26 @@ def create_competition(request):
                             confederation,
                             url)
                             VALUES
-                            (%s, %s, %s, "europa_league", "international_cup", -1, "europa_league", "", "", "");"""  
+                            (%s, %s, %s, "europa_league", "international_cup", -1, "", "", "europa_league", "");"""  
             
             cursor.execute(statement, (id, name, name))
             connection.commit()
             cursor.close()
             connection.close() 
 
+def ban_tournament(request):
+        if request.method == 'POST':
+            if 'ban_id' in request.form:
+                connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+                cursor = connection.cursor()
+                id = request.form.get('id')
+                statement = """ DELETE FROM futbalmania.competitions
+                                WHERE competition_id = %s;"""
+                cursor.execute(statement, (id, ))
+                connection.commit()
+                cursor.close()
+                connection.close() 
+     
 def update_value(request):
         if request.method == 'POST':
             connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
