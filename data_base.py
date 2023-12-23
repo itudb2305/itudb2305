@@ -800,7 +800,7 @@ def get_leagues(season, country):
          """
 
 
-        cursor.execute(statement, (abc,season, ))
+        cursor.execute(statement, (season,country, ))
 
        # cursor.execute(statement)
         result =cursor.fetchall()
