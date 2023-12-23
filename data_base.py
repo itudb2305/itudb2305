@@ -316,7 +316,7 @@ def games_details_get_game(game_id):
         results[8] = results[8].replace('-', ' ')
         results[8] = results[8].title()
 
-        print(results)
+        pass
     except dbapi.DatabaseError:
         print("Database error - Select Game details")
     finally:
@@ -324,6 +324,62 @@ def games_details_get_game(game_id):
         connection.close()
 
     return results
+
+def games_details_get_event( game_id ):
+    
+    results = []
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """SELECT A.game_event_id, A.game_id, A.minute, A.game_events_type,
+                        B.clubs_name, C.players_name, in_player.players_name,
+                        asist_player.players_name, A.description
+                        FROM game_events A
+                        LEFT JOIN clubs B ON B.club_id = A.club_id
+                        LEFT JOIN players C ON C.player_id = A.player_id
+                        LEFT JOIN players in_player ON in_player.player_id = A.player_in_id
+                        LEFT JOIN players asist_player ON asist_player.player_id = A.player_assist_id
+                        where A.game_id = %d
+                        order by A.minute;"""
+
+        cursor.execute(statement %game_id)
+
+        results = cursor.fetchall()
+        results = [list(comp) for comp in results]
+
+        for i in range(len(results)):
+            if results[i][8][0] == ',':
+                results[i][8] = str(results[i][8]).replace(',', ' ', 1)
+
+        #print(results)
+        pass
+    except dbapi.DatabaseError:
+        print("Database error - Select Game Events")
+    finally:
+        cursor.close()
+        connection.close()
+        return results
+    
+def games_events_delete_event(game_event_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """DELETE FROM game_events WHERE game_event_id = '%s';"""
+
+        cursor.execute(statement %str(game_event_id))
+        connection.commit()
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database error")
+    finally:
+        cursor.close()
+        connection.close()
+
+    return True
 
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")

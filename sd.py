@@ -374,9 +374,19 @@ def games_add():
 def games_details(game_id):
 
     games_details = games_details_get_game( int(game_id) )
+    games_events = games_details_get_event( int(game_id) )
 
     return render_template('game_details.html',
-                            games_details = games_details)
+                            games_details = games_details,
+                            games_events = games_events)
+
+@app.route("/game_events_delete")
+def game_events_delete():
+    game_event_id = request.args.get("game_event_id")
+    
+    games_events_delete_event( game_event_id )
+
+    return redirect( request.headers.get("Referer") ) 
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():

@@ -10,9 +10,9 @@
     <table class="game_table games_details">
         <thead>
             <tr>
-                <td><a href="" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a></i> </td>
-                <td><b>HOME CLUB</b></td>
-                <td><b>AWAY CLUB</b></td>
+                <th><a href="" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a></i> </th>
+                <th><b>HOME CLUB</b></th>
+                <th><b>AWAY CLUB</b></th>
             </tr>
         </thead>
         <tbody>
@@ -69,6 +69,42 @@
                 <td>Referee: </td>
                 <td colspan="2">{{ games_details[14] }}</td>
             </tr>
+        </tbody>
+    </table>
+
+    <h2 style="text-align: center;">Game Events</h2>
+
+    <table class="game_table games_details">
+        <thead>
+            <tr>
+                <th>MINUTE</th>
+                <th>EVENT</th>
+                <th>CLUB</th>
+                <th>PLAYER</th>
+                <th>DETAILS</th>
+                <th><a href="" class="btn btn-sm btn-success"><i class="fas fa-plus"></i></a></i> </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if games_events|length == 0 %}
+            <tr>
+                <td colspan="100%">No event found</td>
+            </tr>
+            {% endif %}
+            {% for i_event in games_events %}
+            <tr>
+                <td>{{i_event[2]}}</td>
+                <td>{{i_event[3]}}</td>
+                <td>{{i_event[4]}}</td>
+                {% if i_event[3] == 'Substitutions'%}
+                <td><b>OUT: </b>{{i_event[5]}} </br><b>IN: </b>{{i_event[6]}}</td>
+                {% else %}
+                <td>{{i_event[5]}}</td>
+                {% endif %}
+                <td>{{i_event[8]}}</td>
+                <td><a href="{{ url_for('game_events_delete', game_event_id=i_event[0] )}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this game event?');"><i class="fas fa-trash"></i></a></td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 
