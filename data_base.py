@@ -1,6 +1,8 @@
 import mysql.connector as dbapi # mysql
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
+import string
+import random
 load_dotenv()
 import os
 HOST = os.getenv("HOST")
@@ -250,25 +252,16 @@ def games_add_game(game_datas):
         cursor = connection.cursor()
 
         check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
-        print("a")
-        print(game_datas["home_club_name"])
-        print(game_datas["away_club_name"])
 
         cursor.execute(check_club_statement %(game_datas["home_club_name"]) )
         home_name = cursor.fetchone()
         home_id = home_name[0]
-        print( type(home_id) )
 
         cursor.execute(check_club_statement %(game_datas["away_club_name"]) )
         away_name = cursor.fetchone()
         away_id = away_name[0]
-        print("c")
-        print(away_id)
 
         if not home_id or not away_id:
-            
-            print(home_id)
-            print(away_id)
             raise ValueError('Non-Existing Club(s)')
         
         max_game_id_statement = """Select game_id from games order by game_id DESC limit 1;"""
@@ -290,7 +283,6 @@ def games_add_game(game_datas):
                                              game_datas["away_club_name"], "", game_datas["competition_type"]))
         
         connection.commit()
-        print("done")
 
     except dbapi.DatabaseError:
         connection.rollback()
@@ -314,7 +306,7 @@ def games_details_get_game(game_id):
 
         statement = """SELECT home.clubs_name, away.clubs_name, A.home_club_goals, A.away_club_goals, A.home_club_position, A.away_club_position,
                         A.home_club_manager_name, A.away_club_manager_name, B.competitions_name, A.season, A.games_round, A.games_date, A.stadium,
-                        A.attendance, A.referee, A.home_club_formation, A.away_club_formation
+                        A.attendance, A.referee, A.home_club_formation, A.away_club_formation, A.game_id
                         FROM games A
                         LEFT JOIN competitions B ON A.competition_id = B.competition_id
                         LEFT JOIN clubs home ON A.home_club_id = home.club_id
@@ -392,6 +384,76 @@ def games_events_delete_event(game_event_id):
         connection.close()
 
     return True
+
+def games_details_add_game_events(game_datas):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
+
+        cursor.execute(check_club_statement %(game_datas["club"]) )
+        club_x = cursor.fetchone()
+        club_id = club_x[0]
+
+        check_player_statement = """SELECT player_id FROM players where players_name = '%s';"""
+
+        cursor.execute(check_player_statement %(game_datas["player"]) )
+        player_x = cursor.fetchone()
+        player_id = player_x[0]
+
+        check_other_player_statement = """SELECT player_id FROM players where players_name = '%s';"""
+
+        cursor.execute(check_other_player_statement %(game_datas["in_player"]) )
+        other_x = cursor.fetchone()
+        if other_x and game_datas["event"] == 'Substitutions':
+            other_player_id = other_x[0]
+        else:
+            other_player_id = 'NULL'
+
+        if not player_id:
+            raise ValueError('Non-Existing Club(s)')
+        
+        #Generate new game_event_id - original database uses some hash code for key
+        while(True):
+
+            res = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+
+            key_unique_statement = """SELECT count(*) FROM game_events where game_event_id = '%s';"""
+
+            cursor.execute(key_unique_statement %(res) )
+            temp = cursor.fetchone()
+            key_i = temp[0]
+
+            if(key_i == 1):
+                continue
+            else:
+                break
+
+        insertion_statement = """INSERT INTO game_events(game_event_id, game_events_date, game_id, minute, game_events_type,
+                                club_id, player_id, description, player_in_id, player_assist_id)
+                                VALUES ('%s', %s, %s, %s, '%s', %s, %s, '%s', %s, %s);"""
+
+        cursor.execute(insertion_statement %(res, 'NULL', game_datas['game_id'], game_datas['minute'], game_datas['event'],
+                                             club_id, player_id, game_datas['details'], other_player_id, 'NULL') )
+        
+
+        connection.commit()
+
+        pass
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database error - Add Game Event")
+    except ValueError:
+        connection.rollback()
+        print("Value error - Non-existing Player")
+    finally:
+        cursor.close()
+        connection.close()
+
+    #if not home_id or not away_id:
+    #raise ValueError('Non-Existing Club(s)')
 
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")

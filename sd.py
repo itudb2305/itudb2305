@@ -452,8 +452,13 @@ def games_add():
 
     return redirect( url_for('games') ) 
 
-@app.route("/games_details/<int:game_id>")
+@app.route("/games_details/<int:game_id>", methods=['POST', 'GET'])
 def games_details(game_id):
+
+    if request.method == 'POST': #For adding new games
+        all_form_data = request.form
+        requests.post( url_for('games_events_add', _external=True), all_form_data )
+        return redirect( url_for('games_details', game_id = game_id) ) 
 
     games_details = games_details_get_game( int(game_id) )
     games_events = games_details_get_event( int(game_id) )
@@ -469,6 +474,17 @@ def game_events_delete():
     games_events_delete_event( game_event_id )
 
     return redirect( request.headers.get("Referer") ) 
+
+@app.route("/games_events_add", methods =['POST', 'GET'])
+def games_events_add():
+    
+    game_datas = request.form
+    print(game_datas)
+    
+    games_details_add_game_events(game_datas)
+
+    return redirect( url_for('games_details', game_id = game_datas["game_id"])  ) 
+
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
