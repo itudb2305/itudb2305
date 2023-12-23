@@ -452,6 +452,41 @@ def games_add():
 
     return redirect( url_for('games') ) 
 
+@app.route("/games/edit/<int:game_id>", methods=['POST', 'GET'])
+def edit_game(game_id):
+
+    if request.method == 'POST':
+        updated_game = { #This columns will be dropped when i normalize
+            'competition_id': request.form.get('competition_id'),
+            'season': request.form.get('season'),
+            'games_round': "'" + request.form.get('games_round') + "'",
+            'games_date': "'" + request.form.get('games_date') + "'",
+            'home_club_id': request.form.get('home_club_id'), #from search
+            'away_club_id': request.form.get('away_club_id'), #from search
+            'home_club_goals': request.form.get('home_club_goals'),
+            'away_club_goals': request.form.get('away_club_goals'),
+            'home_club_position': request.form.get('home_club_position'),
+            'away_club_position': request.form.get('away_club_position'),
+            'home_club_manager_name': "'" + request.form.get('home_club_manager_name') + "'",
+            'away_club_manager_name': "'" + request.form.get('away_club_manager_name') + "'",
+            'stadium': "'" + request.form.get('stadium') + "'",
+            'attendance': request.form.get('attendance'),
+            'referee': "'" + request.form.get('referee') + "'",
+            #'url': '',
+            'home_club_formation': "'" + request.form.get('home_club_formation') + "'",
+            'away_club_formation': "'" + request.form.get('away_club_formation') + "'",
+            'home_club_name': request.form.get('home_club_name'),
+            'away_club_name': request.form.get('away_club_name'),
+            #'games_aggregate': ''
+            'competition_type': "''" #from search
+        }
+
+        game_update_game(updated_game, game_id)
+        return redirect( url_for('games_details', game_id = game_id) ) 
+    else:
+        game_details = game_update_get_all(game_id)
+        return render_template('edit_game.html', game_details = game_details)
+
 @app.route("/games_details/<int:game_id>", methods=['POST', 'GET'])
 def games_details(game_id):
 

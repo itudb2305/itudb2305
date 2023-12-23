@@ -296,6 +296,77 @@ def games_add_game(game_datas):
 
     return True
 
+def game_update_get_all(game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor(dictionary=True)
+
+        statement = """SELECT * FROM games where game_id = %s"""
+
+        cursor.execute(statement %game_id)
+
+        results = cursor.fetchone()
+        return results
+    except dbapi.DatabaseError:
+        print("Database Error - game_update_get_all")
+    finally:
+        cursor.close()
+        connection.close()
+
+def game_update_game(updated_game, game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
+
+        cursor.execute(check_club_statement %(updated_game["home_club_name"]) )
+        home_name = cursor.fetchone()
+
+        cursor.execute(check_club_statement %(updated_game["away_club_name"]) )
+        away_name = cursor.fetchone()
+
+        if home_name and away_name:
+            away_id = away_name[0]
+            home_id = home_name[0]
+        else:
+            print(home_name)
+            print(away_name)
+            raise TypeError('No input?')
+
+        check_comp_statement = """SELECT competitions_name FROM competitions where competition_id = '%s';"""
+        cursor.execute(check_comp_statement %(updated_game["competition_id"]) )
+        temp = cursor.fetchone()
+        comp_name = temp[0]
+
+        updated_game["home_club_id"] = home_id
+        updated_game["away_club_id"] = away_id
+        updated_game["home_club_name"] = "'" + updated_game["home_club_name"] + "'"
+        updated_game["away_club_name"] = "'" + updated_game["away_club_name"] + "'"
+        updated_game["competition_id"] = "'" + updated_game["competition_id"] + "'"
+
+        update_parts = [f"{key} = %s" for key in updated_game]
+        update_statement = f"UPDATE games SET {', '.join(update_parts)} WHERE game_id = %s;"
+
+        update_values = tuple(updated_game.values()) + (game_id,)
+
+        print(update_statement %update_values)
+        cursor.execute(update_statement %update_values)
+        #connection.commit()
+
+        pass
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database Error - Update Game")
+    except TypeError:
+        connection.rollback()
+        print("Type Error")
+    finally:
+        cursor.close()
+        connection.close()
+    
 def games_details_get_game(game_id):
 
     results = []
