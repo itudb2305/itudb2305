@@ -7,4 +7,69 @@
         <p>This is the game details page of Futbalmania</p>
     </section>
 
+    <table class="game_table games_details">
+        <thead>
+            <tr>
+                <td><a href="" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a></i> </td>
+                <td><b>HOME CLUB</b></td>
+                <td><b>AWAY CLUB</b></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Club Name: </td>
+                <td>{{ games_details[0] }}</td>
+                <td>{{ games_details[1] }}</td>
+            </tr>
+            <tr>
+                <td>Goals: </td>
+                <td>{{ games_details[2] }}</td>
+                <td>{{ games_details[3] }}</td>
+            </tr>
+            <tr>
+                <td>Club Position: </td>
+                <td>{{ games_details[4] }}</td>
+                <td>{{ games_details[5] }}</td>
+            </tr>
+            <tr>
+                <td>Club Manager: </td>
+                <td>{{ games_details[6] }}</td>
+                <td>{{ games_details[7] }}</td>
+            </tr>
+            <tr>
+                <td>Club Formation: </td>
+                <td>{{ games_details[15] }}</td>
+                <td>{{ games_details[16] }}</td>
+            </tr>
+            <tr>
+                <td>Competition: </td>
+                <td colspan="2">{{ games_details[8] }}</td>
+            </tr>
+            <tr>
+                <td>Season: </td>
+                <td colspan="2">{{ games_details[9] }}</td>
+            </tr>
+            <tr>
+                <td>Game Round: </td>
+                <td colspan="2">{{ games_details[10] }}</td>
+            </tr>
+            <tr>
+                <td>Date: </td>
+                <td colspan="2">{{ games_details[11] }}</td>
+            </tr>
+            <tr>
+                <td>Stadium: </td>
+                <td colspan="2">{{ games_details[12] }}</td>
+            </tr>
+            <tr>
+                <td>Attendance: </td>
+                <td colspan="2">{{ games_details[13] }}</td>
+            </tr>
+            <tr>
+                <td>Referee: </td>
+                <td colspan="2">{{ games_details[14] }}</td>
+            </tr>
+        </tbody>
+    </table>
+
 {% endblock %}

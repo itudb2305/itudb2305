@@ -292,6 +292,39 @@ def games_add_game(game_datas):
 
     return True
 
+def games_details_get_game(game_id):
+
+    results = []
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """SELECT home.clubs_name, away.clubs_name, A.home_club_goals, A.away_club_goals, A.home_club_position, A.away_club_position,
+                        A.home_club_manager_name, A.away_club_manager_name, B.competitions_name, A.season, A.games_round, A.games_date, A.stadium,
+                        A.attendance, A.referee, A.home_club_formation, A.away_club_formation
+                        FROM games A
+                        LEFT JOIN competitions B ON A.competition_id = B.competition_id
+                        LEFT JOIN clubs home ON A.home_club_id = home.club_id
+                        LEFT JOIN clubs away ON A.away_club_id = away.club_id
+                        WHERE a.game_id = %d;"""
+
+        cursor.execute(statement %game_id)
+
+        results = cursor.fetchall()[0]
+        results = [comp for comp in results]
+        results[8] = results[8].replace('-', ' ')
+        results[8] = results[8].title()
+
+        print(results)
+    except dbapi.DatabaseError:
+        print("Database error - Select Game details")
+    finally:
+        cursor.close()
+        connection.close()
+
+    return results
+
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()

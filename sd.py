@@ -370,13 +370,13 @@ def games_add():
 
     return redirect( url_for('games') ) 
 
-@app.route("/games_details")
-def games_details():
-    game_id = int( request.args.get("game_id") )
+@app.route("/games_details/<int:game_id>")
+def games_details(game_id):
 
-    #still going
+    games_details = games_details_get_game( int(game_id) )
 
-    return render_template('game_details.html')
+    return render_template('game_details.html',
+                            games_details = games_details)
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
