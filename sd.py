@@ -95,9 +95,11 @@ def edit_player(player_id):
 
 
 @app.route("/clubs")
-def clubs():
+def clubs(season=2023):
     #kka
-    data = club_list()
+    data = club_list(season)
+
+    """   
     datacopied = []
     country = []
     #convert the tuple to list
@@ -131,9 +133,16 @@ def clubs():
     merged_dict = {}
     for key in my_dict.keys():
         merged_dict[key] = zip(my_dict[key], my_dict2[key])
-   
-    return render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
+    """
+    #eturn render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
+    clubname = [i[0] for i in data]
+    country = [i[2] for i in data]
+    season = [i[3] for i in data]
 
+    merged_dict = zip(clubname, country, season)
+
+
+    return render_template('clubs.html', title='Player',country=merged_dict, cx=merged_dict, clubn=[])
 #kaleab
 @app.route("/clubs_game?club_id=3")
 @app.route("/clubs_game")
@@ -145,13 +154,24 @@ def clubs_game(club_id=3):
 #kaleab
 @app.route("/leagues")
 def leagues():
-    data = get_leagues()
-
-    competition_id =list(set([field[6] for field in data]))
+    league = request.args.get("league", default="GB1")
+    season = request.args.get("season", default="2023")
+    url = url_for('leagues', league=league, season=season)
+    data = get_leagues(league,season)
+    competition_ids = list(set([field[1] for field in data]))
+    clud_ids =list(set([field[6] for field in data]))
     competition_score = []
-    #competition_id = [27]
+    print(competition_ids)
     templist = []
-    for i in competition_id:
+    print(competition_ids)
+    for i in competition_ids:
+        if i == league:
+            clud_ids = list(set([field[6] for field in data if field[1] == i]))
+
+            #clud_ids =list(set([field[6] for field in data] if field[1] == i))
+
+    point = 0
+    for i in clud_ids:
         club_name = ""
         points = 0 #
         scored_for = 0 #
@@ -199,13 +219,24 @@ def leagues():
         netscore = scored_for - scored_against
         templist.append([club_name, match_played, win, draw, lose, scored_for, scored_against, netscore, points])
                
-    competition_id.append(point)
+    clud_ids.append(point)
                     
+        
     templist = (sorted(templist, key=lambda x: (x[-1], x[-2])))
     templist = templist[::-1]
     
     #competition_score.append([j[6], 3, 0, 0])
-    return render_template('leagues.html', title='Leagues', result=templist)
+    x = getnameofleague()
+    x = [item[0] for item in x]
+
+    y = seasonofleague()
+    y = [item[0] for item in y]
+    y.reverse()
+    print(y)
+    
+    return render_template('leagues.html', title='Leagues', result=templist, leaguesnamelist = x, leaguesseason = y  )
+
+
 @app.route("/quiz_game", methods=['GET', 'POST'])
 def quiz_game():
     if 'score' not in session:

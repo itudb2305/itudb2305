@@ -7,7 +7,7 @@
         <h1>Club Data</h1>
 
         <h2>Countries</h2>
-        
+        {{ cx }}
         <style>
             body {
                 font-family: 'Arial', sans-serif;
@@ -77,8 +77,9 @@
         
 
         <ul id="country-filter">
-            {% for key, values in country.items() %}
-                <div class="accordion" id="accordionExample">
+            {% for key, values, vay in country %}
+            <p> {{key }} {{values}} {{vay}} </p>
+              <!--   <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -91,14 +92,14 @@
                              data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <ul>
-                                    {% for value1, value0 in values%}
-                                        <a href="{{ url_for('clubs_game', club_id=value0) }}"><li> {{ value1 }} </li></a>
-                                    {% endfor %}
+                                    
+                                        <a href="{{ url_for('clubs_game', club_id=value) }}"><li> {{ value }} </li></a>
+                            
                                 </ul>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             {% endfor %}
         </ul>
         

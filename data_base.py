@@ -87,11 +87,25 @@ def club_list():
     cursor = connection.cursor()
 
     statement =  '''
-                    SELECT clubs_name, country_name, club_id
-                    FROM clubs
-                    JOIN competitions
-                    ON clubs.domestic_competition_id = competitions.domestic_league_code; 
+                   SELECT 
+                        distinct(clubs_name),
+                        competition_code,
+                        games.competition_id,
+                        season,
+                        country_name
+                    FROM games
+                    JOIN clubs ON clubs.club_id = games.home_club_id
+                    JOIN competitions ON competitions.competition_id = games.competition_id
+                    WHERE season = 2023 AND games.competition_id = "GB1";
                 '''
+
+    """
+     distinct(clubs_name),
+    country_name, 
+    club_id,
+    season,
+    competitions_name
+    """
 
     cursor.execute(statement)
     clubslist = cursor.fetchall()
@@ -538,14 +552,16 @@ def update_value(request):
             cursor.close()
             connection.close() 
     
-def get_leagues():
+def get_leagues(abc="TR1", season="2022"):
+
+        
         connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
 
         statement = """ 
                     SELECT 
                         game_id,
-                        competition_id,
+                        games.competition_id,
                         season,
                         games_round,
                         games_date,
@@ -558,9 +574,70 @@ def get_leagues():
                         FROM games
                         JOIN clubs c1 ON c1.club_id = games.home_club_id
                         JOIN clubs c2 ON c2.club_id = games.away_club_id
-                    where competition_id = "L1" AND  
-                    season = "2022" ;
+                        JOIN competitions c3 ON c3.competition_id = games.competition_id
+                    where 
+                    c3.competition_id = %s AND
+                    season = %s AND
+                    c3.sub_type = "first_tier"
+                     ;
          """
+
+
+        cursor.execute(statement, (abc,season, ))
+
+       # cursor.execute(statement)
+        result =cursor.fetchall()
+        cursor.close()
+        connection.close()    
+        return result
+
+def getnameofleague():
+
+        
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """ 
+                   SELECT 
+                        
+                        distinct(games.competition_id)
+                        
+                        
+                        FROM games
+                   
+                        JOIN competitions c3 ON c3.competition_id = games.competition_id
+                    where 
+                
+                    c3.sub_type = "first_tier"
+         """
+
+
+
+        cursor.execute(statement)
+        result =cursor.fetchall()
+        cursor.close()
+        connection.close()    
+        return result
+
+def seasonofleague():
+
+        
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """ 
+                    SELECT 
+                          distinct(season)
+                        FROM competitions 
+                        JOIN games ON competitions.competition_id = games.competition_id
+                    where 
+                    sub_type = "first_tier";
+                    ORDER BY season ASC
+
+         """
+
+
+
         cursor.execute(statement)
         result =cursor.fetchall()
         cursor.close()
