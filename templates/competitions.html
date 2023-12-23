@@ -55,7 +55,7 @@
                         <td>
                             <input type="hidden" name="id" value="{{ each[3] }}">
                             <label for="name">New Name</label>
-                            <input type="name" id="name", name="name">
+                            <input type="text" id="name", name="name">
                             <button type="submit" class="new_name" name = "new_name">Change Name</button>
                         </td>
                     </tr>
@@ -65,6 +65,18 @@
         </table>
    
     {% endif %}
+</div>
+
+<div class="create_tournament">
+    <form method="post", action="{{ url_for('create_tournament') }}">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name">
+
+        <label for="id">Competition ID</label>
+        <input type="text" id="id" name="id">
+
+        <button type="submit" name="create">Create</button>
+    </form>
 </div>
 
 {% endblock %}

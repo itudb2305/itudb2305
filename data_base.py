@@ -675,13 +675,15 @@ def change_tournament(request):
             if 'ban_id' in request.form:
                 statement = """ DELETE FROM futbalmania.competitions
                                 WHERE competition_id = %s;"""
-                
-            if 'new_name' in request.form:
+                cursor.execute(statement, (id, ))
+
+            elif 'new_name' in request.form:
                  name = request.form.get('name')
                  statement = """ UPDATE futbalmania.competitions
                                  SET competitions_name = %s
                                  WHERE competition_id = %s; """
-            cursor.execute(statement, (name, id))
+                 cursor.execute(statement, (name, id))
+            
             connection.commit()
             cursor.close()
             connection.close() 

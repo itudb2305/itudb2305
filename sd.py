@@ -306,6 +306,7 @@ def competitions():
 @app.route('/change_competition', methods=['POST'])
 def change_competition():
         if request.method == 'POST':
+            print(request)
             change_tournament(request)
             return render_template('competitions.html', title='Competitions')
         else:
@@ -416,9 +417,9 @@ def update_market_value():
 def create_tournament():
     if request.method == 'POST':
         create_competition(request)
-        return render_template('create_tournament.html', title='Created Tournament')
+        return render_template('competitions.html', title='Competitions')
     else:
-        return render_template('create_tournament.html', title='Create Tournament')
+        return render_template('competitions.html', title='Competitions')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
