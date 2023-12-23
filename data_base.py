@@ -266,7 +266,7 @@ def games_add_game(game_datas):
         print(away_id)
 
         if not home_id or not away_id:
-            print("fuck")
+            
             print(home_id)
             print(away_id)
             raise ValueError('Non-Existing Club(s)')
@@ -771,7 +771,7 @@ def update_value(request):
             connection.close() 
     
     
-def get_leagues():
+def get_leagues(season, country):
         connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
 
