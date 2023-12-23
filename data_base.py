@@ -87,26 +87,24 @@ def club_list():
     cursor = connection.cursor()
 
     statement =  '''
-                   SELECT 
+                  
+                  SELECT 
                         distinct(clubs_name),
                         competition_code,
                         games.competition_id,
                         season,
-                        country_name
+                        country_name,
+                        club_id,
+                        competition_type
                     FROM games
                     JOIN clubs ON clubs.club_id = games.home_club_id
                     JOIN competitions ON competitions.competition_id = games.competition_id
-                    WHERE season = 2023 AND games.competition_id = "GB1";
-                '''
+                    WHERE competitions_type = "domestic_league";
+                  '''
 
-    """
-     distinct(clubs_name),
-    country_name, 
-    club_id,
-    season,
-    competitions_name
-    """
 
+    #cursor.execute(statement, (season,country, ))
+    #competitions_type = "domestic_league" AND
     cursor.execute(statement)
     clubslist = cursor.fetchall()
 

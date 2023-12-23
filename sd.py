@@ -4,6 +4,40 @@ import requests
 from data_base import *
 import random
 
+class Clubs:
+    def __init__(self, country, season):
+        self.country = country
+        self.season = season
+        self.clubs = []
+        self.flag = "https://www.nationsonline.org/flags/" + country.lower() + "_flag.gif"
+
+    def setCountry(self,country):
+        self.country = country
+
+    def setSeason(self,season):
+        self.season = season
+
+    def setClubs(self,ctry, ssn,clbs):
+        for clb in clbs:
+            if self.country == ctry and self.season == ssn:
+                self.clubs.append(clb)
+        
+
+    
+
+    def __repr__(self):
+        return f"Club( '{self.country}', '{self.season}', '{self.clubs}')"
+
+
+
+
+
+
+
+
+
+
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -95,54 +129,70 @@ def edit_player(player_id):
 
 
 @app.route("/clubs")
-def clubs(season=2023):
-    #kka
-    data = club_list(season)
-
-    """   
-    datacopied = []
-    country = []
-    #convert the tuple to list
-    for i in range(len(data)):
-        datacopied.append(data[i])
-
-    valxvaly = []
-    valxvalz = []
-    #append the clubs
-    for i in range(len(datacopied)):
-        valxvaly.append(datacopied[i][1])
-        valxvalz.append(datacopied[i][2])
+def clubs(season="2023", cty = "Turkey"):
+    
+    data = club_list()
+    clubname = [i[0] for i in data]
+    country = [i[4] for i in data]
+    season = [i[3] for i in data]
+    
     
     unique_list = []
-    # get unique countries
-    for x in valxvaly:
-        # check if exists in unique_list or not
+    for x in country:
         if x not in unique_list:
             unique_list.append(x)
-    
-    #create a dictionary
-    my_dict = {key: [] for key in unique_list}
-    my_dict2 = {key: [] for key in unique_list}
 
-    for i in range(0, len(datacopied)):
-        if datacopied[i][1] in my_dict:
-            my_dict[datacopied[i][1]].append(datacopied[i][0])
-            my_dict2[datacopied[i][1]].append(datacopied[i][2])
+    unique_list2 = []
+    
+    for x in season:
+        if x not in unique_list2:
+            unique_list2.append(x)
+    unique_list2 = {key: [] for key in unique_list2}
+    countryseason = {key: unique_list2 for key in unique_list}
+    #print(countryseason.values())
+    xy = []
+    lx = []
+    for i in unique_list:
+        for j in unique_list2:
+           xy.append(Clubs(i,j))
+    
+
+    print(xy)
+    
+
+    for j in xy:
+        for i in data:
+            if i[4] == j.country and i[3] == j.season:
+                j.clubs.append(i[0])
+
+    print(xy)
+    """     my_dict = {key: [] for key in unique_list}
+    my_dict2 = {key: [] for key in unique_list}
+    my_list = [] """
+    """  
+    for i in range(0, len(data)):
+        if data[i][4] in x:
+            if data[i][3] in countryseason.values():
+                countryseason[data[i][4]][data[i][3]] = "x"
 
             
-    merged_dict = {}
+                """ 
+    """      my_dict[data[i][4]].append(data[i][0])
+                my_dict2[data[i][4]].append(data[i][5]) """
+
+    #print(countryseason)
+    """  merged_dict = {}
     for key in my_dict.keys():
-        merged_dict[key] = zip(my_dict[key], my_dict2[key])
+        merged_dict[key] = list(zip(my_dict[key], my_dict2[key]))
     """
+
     #eturn render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
-    clubname = [i[0] for i in data]
-    country = [i[2] for i in data]
-    season = [i[3] for i in data]
+   
 
-    merged_dict = zip(clubname, country, season)
+    #merged_dict = zip(clubname, country, season)
+   
 
-
-    return render_template('clubs.html', title='Player',country=merged_dict, cx=merged_dict, clubn=[])
+    return render_template('clubs.html', title='Player',country=xy, cx=xy, clubn=data, xx = xy)
 #kaleab
 @app.route("/clubs_game?club_id=3")
 @app.route("/clubs_game")
@@ -234,7 +284,7 @@ def leagues():
     y.reverse()
     print(y)
     
-    return render_template('leagues.html', title='Leagues', result=templist, leaguesnamelist = x, leaguesseason = y  )
+    return render_template('leagues.html', title='Leagues', result=templist, leaguesnamelist = x, leaguesseason = y   )
 
 
 @app.route("/quiz_game", methods=['GET', 'POST'])
