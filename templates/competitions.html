@@ -7,9 +7,9 @@
     <p>This page shows the list of competitions of the country you choose.</p>
 </section>
 <div class="country_search">
-    <form method="post", action="{{ url_for('competitions') }}">
+    <form method="post" action="{{ url_for('competitions') }}">
         <label for="country">Country</label>
-        <select id="country_search", name="country">
+        <select id="country_search" name="country">
             <option value="" selected>International</option>
             <option value="Belgium">Belgium</option>
             <option value="Denmark">Denmark</option>
@@ -24,33 +24,59 @@
             <option value="Spain">Spain</option>
             <option value="Turkey">Turkey</option>
             <option value="Ukraine">Ukraine</option>
-        </select> 
+        </select>
         <button type="submit">Search</button>
     </form>
 </div>
 <div class="country_result">
     {% if competition %}
-    <table id="competition_result_table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Country Name</th>
-                <th>ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for each in competition %}
+        <table id="competition_result_table">
+            <thead>
                 <tr>
-                    <td>{{ each[0] }}</td>
-                    <td>{{ each[1] }}</td>
-                    <td>{{ each[2] }}</td>
-                    <td>{{ each[3] }}</td>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Country Name</th>
+                    <th>ID</th>
+                    <th>Ban Competition</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for each in competition %}
+                <form method="post" action="{{ url_for('change_competition') }}">
+                    <tr>
+                        <td>{{ each[0] }}</td>
+                        <td>{{ each[1] }}</td>
+                        <td>{{ each[2] }}</td>
+                        <td>{{ each[3] }}</td>
+                        <td>
+                            <input type="hidden" name="id" value="{{ each[3] }}">
+                            <button type="submit" class="ban_id" name = "ban_id">Ban</button>
+                        </td>
+                        <td>
+                            <input type="hidden" name="id" value="{{ each[3] }}">
+                            <label for="name">New Name</label>
+                            <input type="text" id="name", name="name">
+                            <button type="submit" class="new_name" name = "new_name">Change Name</button>
+                        </td>
+                    </tr>
+                </form>
+                {% endfor %}
+            </tbody>
+        </table>
+   
     {% endif %}
 </div>
-</section>
+
+<div class="create_tournament">
+    <form method="post", action="{{ url_for('create_tournament') }}">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name">
+
+        <label for="id">Competition ID</label>
+        <input type="text" id="id" name="id">
+
+        <button type="submit" name="create">Create</button>
+    </form>
+</div>
+
 {% endblock %}
