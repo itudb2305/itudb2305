@@ -484,8 +484,11 @@ def edit_game(game_id):
         game_update_game(updated_game, game_id)
         return redirect( url_for('games_details', game_id = game_id) ) 
     else:
+        game_competitions = game_get_comp()
         game_details = game_update_get_all(game_id)
-        return render_template('edit_game.html', game_details = game_details)
+        return render_template('edit_game.html',
+                                game_details = game_details,
+                                game_competitions = game_competitions)
 
 @app.route("/games_details/<int:game_id>", methods=['POST', 'GET'])
 def games_details(game_id):

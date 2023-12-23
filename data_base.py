@@ -354,7 +354,7 @@ def game_update_game(updated_game, game_id):
 
         print(update_statement %update_values)
         cursor.execute(update_statement %update_values)
-        #connection.commit()
+        connection.commit()
 
         pass
     except dbapi.DatabaseError:
