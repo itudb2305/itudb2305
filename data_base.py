@@ -550,6 +550,8 @@ def game_update_game_event(updated_game, player_names, game_id):
             away_name = cursor.fetchone()
         if away_name:
             player_in_id = away_name[0]
+        else:
+            player_in_id = 'NULL'
 
         if home_name:
             players_id = home_name[0]

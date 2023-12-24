@@ -23,7 +23,7 @@
                     <input type="text" class="form-control" id="minute" name="minute" value="{{ game_details.minute }}">
 
                     <label for="game_events_type" class="form-label"> game_events_type </label>
-                    <select name="event" class="form-control">
+                    <select name="game_events_type" class="form-control">
                         <option value="Cards" {% if game_details.game_events_type in event_type[0] %} selected {% endif %}>Cards</option>
                         <option value="Substitutions" {% if game_details.game_events_type in event_type[1] %} selected {% endif %}>Substitutions</option>
                         <option value="Goals" {% if game_details.game_events_type in event_type[2] %} selected {% endif %}>Goals</option>
