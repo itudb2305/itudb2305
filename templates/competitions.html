@@ -44,7 +44,7 @@
                 {% for each in competition %}
                 <form method="post" action="{{ url_for('change_competition') }}">
                     <tr>
-                        <td>{{ each[0] }}</td>
+                        <td><a href="{{ url_for('player_details', player_id=each[4]) }}" class="player-link">{{ each[0] }}</a></td>
                         <td>{{ each[1] }}</td>
                         <td>{{ each[2] }}</td>
                         <td>{{ each[3] }}</td>

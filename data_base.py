@@ -859,7 +859,7 @@ def get_transfer_list(request):
 
             statement = """SELECT A.sub_position, A.first_name, A.last_name, TIMESTAMPDIFF(YEAR, A.date_of_birth, CURDATE()) AS age, 
                            A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur,
-                           A.contract_expiration_date, MAX(B.player_valuations_date) as latest
+                           A.contract_expiration_date, MAX(B.player_valuations_date) as latest, A.player_id
                            FROM futbalmania.players A
                            Join futbalmania.player_valuations B on A.player_id = B.player_id
                            Join futbalmania.clubs C ON  A.current_club_id = C.club_id
@@ -872,7 +872,7 @@ def get_transfer_list(request):
                            AND TIMESTAMPDIFF(YEAR, A.date_of_birth, CURDATE()) BETWEEN %s AND %s
                            AND B.last_season = 2023
                            GROUP BY A.sub_position, A.first_name, A.last_name, age, 
-                           A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur, A.contract_expiration_date 
+                           A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur, A.contract_expiration_date, A.player_id 
                            ORDER BY latest DESC;
                            """
             
