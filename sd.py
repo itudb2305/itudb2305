@@ -185,8 +185,8 @@ def edit_appearance(appearance_id):
     if request.method == 'POST':
         updated_data = {
              #'player_name': request.form.get('player_name'),
-            'red_cards': request.form.get('red_cards'),
             'yellow_cards': request.form.get('yellow_cards'),
+            'red_cards': request.form.get('red_cards'),
             'goals': request.form.get('goals'),
             'assists': request.form.get('assists'),
             'minutes_played': request.form.get('minutes_played')}
