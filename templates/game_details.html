@@ -72,6 +72,35 @@
         </tbody>
     </table>
 
+    <h2 style="text-align: center;">Game Line-up</h2>
+
+    <table class="game_table games_details lineup">
+        <thead>
+            <tr>
+                <th>{{ games_details[0] }}</th>
+                <th>{{ games_details[1] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <ul class="list-group">
+                        {% for player in home_line%}
+                        <li class="list-group-item">{{ player.player_name }} - {{ player.position }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-group">
+                        {% for player in away_line%}
+                        <li class="list-group-item">{{ player.player_name }} - {{ player.position }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
     <h2 style="text-align: center;">Game Events</h2>
 
     <table class="game_table games_details">

@@ -539,6 +539,28 @@ def player_get_events_in_game(game_id, player_id):
     results = cursor.fetchall()
     return results
 
+def get_players(game_id, club_name):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor(dictionary=True)
+
+        
+    query = """
+    SELECT a.player_name, p.position 
+    FROM appearances a 
+    JOIN players p ON a.player_id = p.player_id
+    JOIN clubs c ON c.club_id = a.player_club_id
+    WHERE a.game_id = %s AND c.clubs_name = %s
+	ORDER BY POSITION;
+    """
+
+    cursor.execute(query, (game_id, club_name))
+    result = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return result
+
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()

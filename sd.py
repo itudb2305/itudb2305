@@ -500,10 +500,16 @@ def games_details(game_id):
 
     games_details = games_details_get_game( int(game_id) )
     games_events = games_details_get_event( int(game_id) )
+    home_line = get_players(game_id, games_details[0] )
+    away_line = get_players(game_id, games_details[1] )
+
+    print(home_line)
 
     return render_template('game_details.html',
                             games_details = games_details,
-                            games_events = games_events)
+                            games_events = games_events,
+                            home_line = home_line,
+                            away_line = away_line)
 
 @app.route("/game_events_delete")
 def game_events_delete():
