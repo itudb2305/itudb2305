@@ -1,23 +1,23 @@
 {% extends "layout.html" %}
-{% block title %}Competitions{% endblock %}
+{% block title %}Transfer{% endblock %}
 {% block content %}
 
 <section id="transfer">
-    <h1>Transfer Page</h1>
+    <h1>Search players to transfer</h1>
 </section>
 <div class="transfer_search">
 <form method="post", action="{{ url_for('transfer') }}">
     <label for="minvalue">Min Value</label>
-    <input type="number", id="minvalue", name="minvalue" value="0", step="1">
+    <input type="number", id="minvalue", name="minvalue" value="0", step="1" class="short-input">
 
     <label for="maxvalue">Max Value</label>
-    <input type="number", id="maxvalue" name="maxvalue" value="1000000000", step="1">
+    <input type="number", id="maxvalue" name="maxvalue" value="1000000000", step="1" class="short-input">
 
     <label for="minage">Min Age</label>
-    <input type="number", id="minage" name="minage" value="15", step="1">
+    <input type="number", id="minage" name="minage" value="15", step="1" class="short-input">
 
     <label for="maxage">Max Age</label>
-    <input type="number", id="maxage" name="maxage" value="45", step="1">    
+    <input type="number", id="maxage" name="maxage" value="45", step="1" class="short-input">    
 
     <label for="position">Position</label>
     <select id="position", name="position">
@@ -40,12 +40,12 @@
         <option value="right">Right</option>
         <option value="both">Both</option>
     </select>
-
+    <br>
     <label for="nationality">Nationality</label>
-    <input type="text" id="nationality", name="nationality">
-    
+    <input type="text" id="nationality", name="nationality" class="short-input">
+
     <label for="team">Team</label>
-    <input type="text" id="team" name="team">
+    <input type="text" id="team" name="team" class="short-input">
 
 
     
@@ -92,7 +92,7 @@
 </form>
 </div>
 <section>
-    <h1>Search results:</h1>
+    <h1></h1>
     <div class="transfer_result">
         {% if players %}
         <table id="transfer_result_table">
@@ -112,7 +112,7 @@
                 {% for person in players %}
                     <tr>
                         <td>{{ person[0] }}</td>
-                        <td>{{ person[1] }} {{ person[2] }}</td>
+                        <td><a href="{{ url_for('player_details', player_id=person[10]) }}" class="player-link">{{ person[1] }} {{ person[2] }}</a></td>
                         <td>{{ person[3] }}</td>
                         <td>{{ person[4] }}</td>
                         <td>{{ person[5] }}</td>
@@ -128,4 +128,108 @@
         {% endif %}
     </div>
 </section>
+<style>
+
+#transfer {
+    text-align: center;
+    margin-top: 50px; /* Adjusted margin-top value */
+    padding: 5px; /* Adjusted padding value */
+    background-color: #333;
+    color: #fff;
+}
+.transfer_search {
+    background-color: #fdfdfd;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 84%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.transfer_search label {
+    color: #333;
+    flex: 0 0 48%;
+    margin-bottom: 10px;
+    text-align: left;
+    font-weight: bold; /* Make label text bold */
+}
+
+.transfer_search input,
+.transfer_search select {
+    flex: 0 0 48%;
+    padding: 3x; /* Adjust the vertical padding */
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    height: 30px; /* Adjust the height */
+}
+
+#team.short-input {
+    width: 190px;
+}
+
+.transfer_search button {
+    background-color: #45a049;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.transfer_search button:hover {
+    background-color: #45a049;
+}
+
+.short-input {
+    width: 120px;
+    flex: 1;
+}
+
+
+
+/* Update the style for the transfer_result div */
+.transfer_result {
+    background-color: #fafafa;
+    padding: 0px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px auto; 
+}
+
+.transfer_result_table{
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    width: 70%;
+}
+
+
+.transfer_result_table_body tr{
+    border: 1px solid lightgray;
+    border-collapse: collapse;
+    text-align: center;
+    padding: 4px;
+}
+
+.transfer_result_table_body tr:hover{
+    background-color: lightgray;
+}
+
+.transfer_result p {
+    color: #000; /* Red text color */
+    font-weight: bold;
+    text-align: center; /* Center the text horizontally */
+    margin: 0; /* Remove any default margin */
+    padding: 10px; /* Add padding for spacing */
+    display: block; /* Make it a block-level element for centering */
+    width: 100%; /* Set width to 100% */
+}
+</style>
 {% endblock %}
