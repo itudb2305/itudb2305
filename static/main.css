@@ -96,7 +96,8 @@ section {
 #transfer_result_table th {
     text-align: center;
     padding: 8px;
-    background-color: #fdc777; /* Optional background color for headers */
+    background-color: #333; 
+    color: #fdfdfd;
 }
 
 #transfer_result_table td {
