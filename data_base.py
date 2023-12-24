@@ -838,7 +838,6 @@ def delete_player(player_id):
 
 def get_transfer_list(request):
         if request.method == 'POST':
-            #connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
             connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
             cursor = connection.cursor()
@@ -885,8 +884,7 @@ def get_transfer_list(request):
 
 def get_competition_country(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
-            #connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             country = request.form.get('country')
 
@@ -904,7 +902,7 @@ def get_competition_country(request):
         
 def create_competition(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             id = request.form.get('id')
             name = request.form.get('name')
@@ -929,7 +927,7 @@ def create_competition(request):
 
 def change_tournament(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             id = request.form.get('id')
             if 'ban_id' in request.form:
@@ -950,7 +948,7 @@ def change_tournament(request):
      
 def update_value(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
 
             name = request.form.get('name')
