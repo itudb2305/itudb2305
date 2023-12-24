@@ -85,6 +85,9 @@
             <tr>
                 <td>
                     <ul class="list-group">
+                        {% if home_line|length == 0 %}
+                        <li class="list-group-item">No Player Found</li>
+                        {% endif %}
                         {% for player in home_line%}
                         <li class="list-group-item">{{ player.player_name }} - {{ player.position }}</li>
                         {% endfor %}
@@ -92,6 +95,9 @@
                 </td>
                 <td>
                     <ul class="list-group">
+                        {% if away_line|length == 0 %}
+                        <li class="list-group-item">No Player Found</li>
+                        {% endif %}
                         {% for player in away_line%}
                         <li class="list-group-item">{{ player.player_name }} - {{ player.position }}</li>
                         {% endfor %}
