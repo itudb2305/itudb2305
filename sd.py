@@ -45,6 +45,11 @@ app.secret_key = 'your_secret_key'
 @app.route("/")
 @app.route("/home")
 def home():
+    x = line_ups()
+
+    x = [item[0] for item in x]
+
+    print(x)
     return render_template('home.html')
 
 

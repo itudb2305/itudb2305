@@ -860,3 +860,19 @@ def seasonofleague():
         cursor.close()
         connection.close()    
         return result
+
+def line_ups():
+
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """
+                SELECT distinct(game_lineups_position) 
+                FROM game_lineups;
+            """     
+
+    cursor.execute(statement)
+    result =cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
