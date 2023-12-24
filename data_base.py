@@ -525,6 +525,19 @@ def games_details_add_game_events(game_datas):
 
     #if not home_id or not away_id:
     #raise ValueError('Non-Existing Club(s)')
+        
+def player_get_events_in_game(game_id, player_id):
+
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """SELECT game_events_type, description FROM game_events
+                   WHERE game_id = %s AND player_id = %s"""
+    
+    cursor.execute(statement %(game_id, player_id))
+
+    results = cursor.fetchall()
+    return results
 
 def get_available_countries():
         connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
