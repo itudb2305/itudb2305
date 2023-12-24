@@ -49,7 +49,7 @@ def home():
 
     x = [item[0] for item in x]
 
-    print(x)
+    #print(x)
     return render_template('home.html')
 
 
@@ -132,6 +132,58 @@ def add_player():
     return render_template('add_player.html', player=player)
 
 
+@app.route("/club/add", methods=['GET', 'POST'])
+def add_club():
+    data = club_list()
+    country = [i[1] for i in data]
+    lcode = [i[3] for i in data]
+    
+    
+    unique_list1 = []
+    for x in country:
+        if x not in unique_list1:
+            unique_list1.append(x)
+    country = unique_list1[:]
+
+    unique_list2 = []
+    for x in lcode:
+        if x not in unique_list2:
+            unique_list2.append(x)
+
+    lcode = unique_list2[:]
+    #print(country)
+    #print(lcode)
+    if request.method == 'POST':
+        new_club_data = {
+                'club_id':"",
+                'clubs_name': f"{request.form.get('clubs_name')}",
+                'club_code': f"{request.form.get('club_code')}",
+                'domestic_competition_id': f"{request.form.get('domestic_competition_id')}",
+                'total_market_value': f"{request.form.get('total_market_value')}",
+                'squad_size': f"{request.form.get('squad_size')}",
+                'average_age': f"{request.form.get('average_age')}",
+                'foreigners_number': f"{request.form.get('foreigners_number')}",  
+                'foreigners_percentage': f"{request.form.get('foreigners_percentage')}",
+                'national_team_players': f"{request.form.get('national_team_players')}",
+                'stadium_name': f"{request.form.get('stadium_name')}",
+                'stadium_seats': f"{request.form.get('stadium_seats')}",
+                'net_transfer_record': f"{request.form.get('net_transfer_record')}",  
+                'coach_name': f"{request.form.get('coach_name')}",
+                'last_season': f"{request.form.get('last_season')}"
+        }    
+        print("xxx")  
+        print(new_club_data)
+        print("xxx")
+        insert_new_club(new_club_data)
+        return redirect(url_for('clubs'))
+    
+    player = {'clubs_name': '', 'domestic_competition_id': '', 'squad_size': '', 'foreigners_numbers': '', 'national_team_player': '', 'stadium_name': '', 'stadium_seats': '', 'net_transfer_record': '', 'last_season': '12'}
+    print()
+
+    countrycode = zip(country, lcode)
+    return render_template('add_club.html', club=player, country=country, lcode=lcode, countrycode=countrycode)
+  
+
 
 
 @app.route("/player/edit/<int:player_id>", methods=['GET', 'POST'])
@@ -176,82 +228,51 @@ def player_delete(player_id):
     return redirect(url_for('player'))
 
 
-
-
-
-
-
 @app.route("/clubs")
-def clubs(season="2023", cty = "Turkey"):
-    
+def clubs():
+    #kka
     data = club_list()
-    clubname = [i[0] for i in data]
-    country = [i[4] for i in data]
-    season = [i[3] for i in data]
-    
+    datacopied = []
+    country = []
+    #convert the tuple to list
+    for i in range(len(data)):
+        datacopied.append(data[i])
+
+    valxvaly = []
+    valxvalz = []
+    #append the clubs
+    for i in range(len(datacopied)):
+        valxvaly.append(datacopied[i][1])
+        valxvalz.append(datacopied[i][2])
     
     unique_list = []
-    for x in country:
+    # get unique countries
+    for x in valxvaly:
+        # check if exists in unique_list or not
         if x not in unique_list:
             unique_list.append(x)
-
-    unique_list2 = []
     
-    for x in season:
-        if x not in unique_list2:
-            unique_list2.append(x)
-    unique_list2 = {key: [] for key in unique_list2}
-    countryseason = {key: unique_list2 for key in unique_list}
-    #print(countryseason.values())
-    xy = []
-    lx = []
-    for i in unique_list:
-        for j in unique_list2:
-           xy.append(Clubs(i,j))
-    
-
-    print(xy)
-    
-
-    for j in xy:
-        for i in data:
-            if i[4] == j.country and i[3] == j.season:
-                j.clubs.append(i[0])
-
-    print(xy)
-    """     my_dict = {key: [] for key in unique_list}
+    #create a dictionary
+    my_dict = {key: [] for key in unique_list}
     my_dict2 = {key: [] for key in unique_list}
-    my_list = [] """
-    """  
-    for i in range(0, len(data)):
-        if data[i][4] in x:
-            if data[i][3] in countryseason.values():
-                countryseason[data[i][4]][data[i][3]] = "x"
+
+    for i in range(0, len(datacopied)):
+        if datacopied[i][1] in my_dict:
+            my_dict[datacopied[i][1]].append(datacopied[i][0])
+            my_dict2[datacopied[i][1]].append(datacopied[i][2])
 
             
-                """ 
-    """      my_dict[data[i][4]].append(data[i][0])
-                my_dict2[data[i][4]].append(data[i][5]) """
-
-    #print(countryseason)
-    """  merged_dict = {}
+    merged_dict = {}
     for key in my_dict.keys():
-        merged_dict[key] = list(zip(my_dict[key], my_dict2[key]))
-    """
-
-    #eturn render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
+        merged_dict[key] = zip(my_dict[key], my_dict2[key])
    
+    return render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
 
-    #merged_dict = zip(clubname, country, season)
-   
-
-    return render_template('clubs.html', title='Player',country=xy, cx=xy, clubn=data, xx = xy)
-#kaleab
-@app.route("/clubs_game?club_id=3")
+@app.route("/clubs_game?club_id")
 @app.route("/clubs_game")
 def clubs_game(club_id=3):
     club_id = request.args.get('club_id', default=3, type=int)
-    club_games = clubgame_list(club_id=3)
+    club_games = clubgame_list(club_id)
     return render_template('clubs_game.html', title='Clubs Games', result=club_games)
 
 #kaleab
@@ -264,9 +285,10 @@ def leagues():
     competition_ids = list(set([field[1] for field in data]))
     clud_ids =list(set([field[6] for field in data]))
     competition_score = []
-    print(competition_ids)
+    #print(competition_ids)
     templist = []
-    print(competition_ids)
+    #
+    # print(competition_ids)
     for i in competition_ids:
         if i == league:
             clud_ids = list(set([field[6] for field in data if field[1] == i]))

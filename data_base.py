@@ -89,24 +89,12 @@ def club_list():
     cursor = connection.cursor()
 
     statement =  '''
-                  
-                  SELECT 
-                        distinct(clubs_name),
-                        competition_code,
-                        games.competition_id,
-                        season,
-                        country_name,
-                        club_id,
-                        competition_type
-                    FROM games
-                    JOIN clubs ON clubs.club_id = games.home_club_id
-                    JOIN competitions ON competitions.competition_id = games.competition_id
-                    WHERE competitions_type = "domestic_league";
-                  '''
+                    SELECT distinct(clubs_name), country_name, club_id, domestic_competition_id
+                    FROM clubs
+                    JOIN competitions
+                    ON clubs.domestic_competition_id = competitions.domestic_league_code; 
+                '''
 
-
-    #cursor.execute(statement, (season,country, ))
-    #competitions_type = "domestic_league" AND
     cursor.execute(statement)
     clubslist = cursor.fetchall()
 
@@ -114,6 +102,7 @@ def club_list():
     connection.close()
 
     return clubslist
+
 
 def clubgame_list(club_id):
     #xto get the clublist
@@ -129,6 +118,7 @@ def clubgame_list(club_id):
                         cg.opponent_goals AS goal_against,
                         cg.own_manager_name,
                         cg.opponent_manager_name,
+                        
                         CASE 
                             WHEN cg.hosting = 'Home' THEN c1.stadium_name
                             ELSE c2.stadium_name
@@ -817,6 +807,59 @@ def insert_new_player(new_player_data):
     cursor.close()
     connection.close()
 
+def insert_new_club(new_club_data):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT MAX(club_id) FROM clubs;")
+    max_id_result = cursor.fetchone()
+    max_id = max_id_result[0] if max_id_result[0] is not None else 0
+    next_id = max_id + 1
+    new_club_data['club_id'] = next_id
+    #new_club_data['foreigners_percentage'] = int(new_club_data['foreigners_numbers']) * 100 / int(new_club_data['squad_size'])
+
+
+    """  
+    current_club_name = new_player_data.get('current_club_name')
+    cursor.execute("SELECT club_id, domestic_competition_id FROM clubs WHERE clubs_name = %s", (current_club_name,))
+    club_info = cursor.fetchone()
+
+    if club_info:
+        new_player_data['current_club_id'], new_player_data['current_club_domestic_competition_id'] = club_info
+    """
+    #columns = ', '.join(new_club_data.keys())
+    #colx = ', '.join(new_club_data.values())
+    #placeholders = ', '.join(['%s'] * len(new_club_data))
+
+    #insert_statement = f"INSERT INTO players ({columns}) VALUES ({placeholders});"
+
+    #insert_values = tuple(new_player_data.values())
+
+    
+    #cursor.execute(insert_statement, insert_values)
+    #connection.commit()
+    #print(columns)
+    keystr = ""
+    for key in new_club_data.keys():
+        keystr += key + ","
+    keystr=keystr[0:-1]
+
+    valuestr = ""
+    for value in new_club_data.values():
+        
+        valuestr += f"'{value}'" + ","
+    valuestr=valuestr[0:-1]
+    
+
+    #print(keystr)
+
+    #print(valuestr)
+    insert_statement = f"INSERT INTO clubs ({keystr}) VALUES ({valuestr});"
+    print(insert_statement)
+    cursor.execute(insert_statement)
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 def delete_player(player_id):
     connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
