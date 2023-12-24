@@ -632,6 +632,10 @@ def game_update_game(updated_game, game_id):
         update_parts = [f"{key} = %s" for key in updated_game]
         update_statement = f"UPDATE games SET {', '.join(update_parts)} WHERE game_id = %s;"
 
+        for i in updated_game:
+            if( updated_game[i] == 'None'):
+                updated_game[i] = 'NULL'
+
         update_values = tuple(updated_game.values()) + (game_id,)
 
         print(update_statement %update_values)
