@@ -457,15 +457,64 @@ def games_add():
 
     return redirect( url_for('games') ) 
 
-@app.route("/games_details/<int:game_id>")
+@app.route("/games/edit/<int:game_id>", methods=['POST', 'GET'])
+def edit_game(game_id):
+
+    if request.method == 'POST':
+        updated_game = { #This columns will be dropped when i normalize
+            'competition_id': request.form.get('competition_id'),
+            'season': request.form.get('season'),
+            'games_round': "'" + request.form.get('games_round') + "'",
+            'games_date': "'" + request.form.get('games_date') + "'",
+            'home_club_id': request.form.get('home_club_id'), #from search
+            'away_club_id': request.form.get('away_club_id'), #from search
+            'home_club_goals': request.form.get('home_club_goals'),
+            'away_club_goals': request.form.get('away_club_goals'),
+            'home_club_position': request.form.get('home_club_position'),
+            'away_club_position': request.form.get('away_club_position'),
+            'home_club_manager_name': "'" + request.form.get('home_club_manager_name') + "'",
+            'away_club_manager_name': "'" + request.form.get('away_club_manager_name') + "'",
+            'stadium': "'" + request.form.get('stadium') + "'",
+            'attendance': request.form.get('attendance'),
+            'referee': "'" + request.form.get('referee') + "'",
+            #'url': '',
+            'home_club_formation': "'" + request.form.get('home_club_formation') + "'",
+            'away_club_formation': "'" + request.form.get('away_club_formation') + "'",
+            'home_club_name': request.form.get('home_club_name'),
+            'away_club_name': request.form.get('away_club_name'),
+            #'games_aggregate': ''
+            'competition_type': "''" #from search
+        }
+
+        game_update_game(updated_game, game_id)
+        return redirect( url_for('games_details', game_id = game_id) ) 
+    else:
+        game_competitions = game_get_comp()
+        game_details = game_update_get_all(game_id)
+        return render_template('edit_game.html',
+                                game_details = game_details,
+                                game_competitions = game_competitions)
+
+@app.route("/games_details/<int:game_id>", methods=['POST', 'GET'])
 def games_details(game_id):
+
+    if request.method == 'POST': #For adding new games
+        all_form_data = request.form
+        requests.post( url_for('games_events_add', _external=True), all_form_data )
+        return redirect( url_for('games_details', game_id = game_id) ) 
 
     games_details = games_details_get_game( int(game_id) )
     games_events = games_details_get_event( int(game_id) )
+    home_line = get_players(game_id, games_details[0] )
+    away_line = get_players(game_id, games_details[1] )
+
+    print(home_line)
 
     return render_template('game_details.html',
                             games_details = games_details,
-                            games_events = games_events)
+                            games_events = games_events,
+                            home_line = home_line,
+                            away_line = away_line)
 
 @app.route("/game_events_delete")
 def game_events_delete():
@@ -474,6 +523,47 @@ def game_events_delete():
     games_events_delete_event( game_event_id )
 
     return redirect( request.headers.get("Referer") ) 
+
+@app.route("/games_events_add", methods =['POST', 'GET'])
+def games_events_add():
+    
+    game_datas = request.form
+    print(game_datas)
+    
+    games_details_add_game_events(game_datas)
+
+    return redirect( url_for('games_details', game_id = game_datas["game_id"])  ) 
+
+@app.route("/game_events/edit/<int:game_id>/<string:event_id>", methods=['POST', 'GET'])
+def edit_game_event(event_id, game_id):
+
+    if request.method == 'POST':
+        updated_game = { #This columns will be dropped when i normalize
+            'minute': request.form.get('minute'),
+            'game_events_type': "'" + request.form.get('game_events_type') + "'",
+            'club_id': '',
+            'player_id': '',
+            'player_in_id': '',
+            'description': "'" + request.form.get('description') + "'",
+            'player_assist_id': "''"
+        }
+
+        player_names = {
+            'player_name': "'" + request.form.get('player_name') + "'",
+            'player_in_name': "'" + request.form.get('player_in_name') + "'",
+            'club': "'" + request.form.get('clubs_name') + "'"
+        }
+
+        game_update_game_event(updated_game, player_names, event_id)
+        return redirect( url_for('games_details', game_id = game_id) ) 
+    else:
+        event_type = [["Cards"], ["Substitutions"], ["Goals"], ["Others"]]
+        event_details = event_update_get_all(event_id)
+        return render_template('edit_game_event.html',
+                                game_id = game_id,
+                                event_type = event_type,
+                                game_details = event_details)
+
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
