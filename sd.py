@@ -13,7 +13,7 @@ app.secret_key = 'your_secret_key'
 def home():
     return render_template('home.html')
 
-
+############################## PLAYER PAGE #########################################
 @app.route("/player")
 def player():
     search_query = request.args.get('search', '')
@@ -92,9 +92,6 @@ def add_player():
 
     return render_template('add_player.html', player=player)
 
-
-
-
 @app.route("/player/edit/<int:player_id>", methods=['GET', 'POST'])
 def edit_player(player_id):
     player_info = get_player_details(player_id)
@@ -136,11 +133,71 @@ def player_delete(player_id):
     delete_player(player_id)
     return redirect(url_for('player'))
 
+################################# APPEARANCES ########################################
+@app.route('/appearances')
+def appearances():
+    search_query = request.args.get('search', '')
+    #competition_filter = request.args.get('competition')
+    club_filter = request.args.get('club')
+    page = request.args.get('page', 1, type=int)
+    per_page = 30
+
+    appearances_data = get_appearances_data() 
+
+    available_competitions = get_available_competitions()
+    available_clubs = get_available_clubs()
+
+    if search_query:
+        appearances_data = [appearance for appearance in appearances_data if search_query.lower() in appearance[1].lower()]
+    
+    #if competition_filter:
+      # appearances_data = [appearance for appearance in appearances_data if appearance[4] == competition_filter]
+
+    if club_filter:
+        appearances_data = [appearance for appearance in appearances_data if appearance[2] == club_filter]
+
+    total = len(appearances_data)
+    start = (page - 1) * per_page
+    end = start + per_page
+    players_on_page = appearances_data[start:end]
+
+    total_pages = total // per_page + (1 if total % per_page > 0 else 0)
+
+    return render_template('appearances.html',title='Appearances', result=players_on_page , clubs=available_clubs ,page=page, total_pages=total_pages,search_query=search_query,club_filter=club_filter)
+
+@app.route("/appearances/<appearance_id>")
+def appearance_details(appearance_id):
+    appearance_info = get_appearance_details(appearance_id)
+
+    if not appearance_info:
+        return "Appearance not found", 404
+
+    return render_template('appearance_details.html', appearance=appearance_info)
 
 
+@app.route("/appearances/edit/<appearance_id>", methods=['GET', 'POST'])
+def edit_appearance(appearance_id):
+    appearance_info = get_appearance_details(appearance_id)
+    if not appearance_info:
+        flash('Appearance not found.', 'error')
+        return redirect(url_for('appearances'))
 
+    if request.method == 'POST':
+        updated_data = {
+             #'player_name': request.form.get('player_name'),
+            'red_cards': request.form.get('red_cards'),
+            'yellow_cards': request.form.get('yellow_cards'),
+            'goals': request.form.get('goals'),
+            'assists': request.form.get('assists'),
+            'minutes_played': request.form.get('minutes_played')}
+        
+        
+        update_appearance_details(appearance_id, **updated_data)
+        return redirect(url_for('appearance_details', appearance_id=appearance_id))
 
+    return render_template('edit_appearance.html', appearance=appearance_info)
 
+#################################################################################################################################
 
 @app.route("/clubs")
 def clubs():
@@ -254,6 +311,8 @@ def leagues():
     
     #competition_score.append([j[6], 3, 0, 0])
     return render_template('leagues.html', title='Leagues', result=templist)
+
+############################################ MCQ GAME ############################################
 @app.route("/quiz_game", methods=['GET', 'POST'])
 def quiz_game():
     if 'score' not in session:
@@ -292,8 +351,7 @@ def quiz_game():
         session['last_values'] = values
 
         return render_template('quiz_game.html', title='Quiz Game', q=n, values=values, submitted=False)
-
-
+##############################################################################################################################################################
 
 @app.route("/competitions", methods=['POST', 'GET'])
 def competitions():
@@ -423,3 +481,7 @@ def create_tournament():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
+
+
+
+
