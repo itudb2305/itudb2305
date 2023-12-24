@@ -3,9 +3,9 @@
 {% block content %}
 
 <section id="Competitions">
-    <h1>Welcome to Competitions page</h1>
-    <p>This page shows the list of competitions of the country you choose.</p>
+    <h1>Show the List of Competitions</h1>
 </section>
+<div class = top>
 <div class="country_search">
     <form method="post" action="{{ url_for('competitions') }}">
         <label for="country">Country</label>
@@ -28,6 +28,11 @@
         <button type="submit">Search</button>
     </form>
 </div>
+
+<div>
+    <a href="{{ url_for('create_tournament') }}" class="create-tournament-link">Create Tournament</a>
+</div>
+</div>
 <div class="country_result">
     {% if competition %}
         <table id="competition_result_table">
@@ -38,13 +43,14 @@
                     <th>Country Name</th>
                     <th>ID</th>
                     <th>Ban Competition</th>
+                    <th>New Name</th>
                 </tr>
             </thead>
             <tbody>
                 {% for each in competition %}
                 <form method="post" action="{{ url_for('change_competition') }}">
                     <tr>
-                        <td><a href="{{ url_for('player_details', player_id=each[4]) }}" class="player-link">{{ each[0] }}</a></td>
+                        <td>{{ each[0] }}</td>
                         <td>{{ each[1] }}</td>
                         <td>{{ each[2] }}</td>
                         <td>{{ each[3] }}</td>
@@ -54,7 +60,6 @@
                         </td>
                         <td>
                             <input type="hidden" name="id" value="{{ each[3] }}">
-                            <label for="name">New Name</label>
                             <input type="text" id="name", name="name">
                             <button type="submit" class="new_name" name = "new_name">Change Name</button>
                         </td>
@@ -67,6 +72,139 @@
     {% endif %}
 </div>
 
-<a href="{{ url_for('create_tournament') }}" class="create-tournament-link">Create Tournament</a>
 
+<style>
+    
+    .top {
+        display: flex;
+        align-items: center;
+
+    }
+
+    .country_search {
+        margin-top: 10px;
+        padding: 10px;
+    }
+
+    .create-tournament-link {
+        display: block;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #2196F3;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    p {
+        color: #555;
+    }
+
+    .country_search {
+    margin-right: 20px; /* Add margin to create space between search and link */
+    }
+
+
+    form {
+        display: flex;
+        align-items: center;
+    }
+
+    label {
+        margin-right: 10px;
+    }
+
+    select, button {
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        margin-right: 10px;
+    }
+
+    button {
+        background-color: #4caf50;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .country_result {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+    }
+
+    .new_name {
+        padding: 8px;
+        font-size: 12px;
+        background-color: #f44336;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ban_id {
+        background-color: #f44336;
+        padding: 15px;
+        line-height: 0px;
+        font-size: 16px;
+        width: 100px;
+        height: 30px;
+        border: none;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+    .create-tournament-link {
+        display: block;
+        margin-top: 15px;
+        padding: 10px;
+        width: 200px;
+        background-color: #2196F3;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .center-align {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+</style>
 {% endblock %}
