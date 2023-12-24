@@ -1,6 +1,8 @@
 import mysql.connector as dbapi # mysql
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
+import string
+import random
 load_dotenv()
 import os
 HOST = os.getenv("HOST")
@@ -379,12 +381,24 @@ def club_list():
     cursor = connection.cursor()
 
     statement =  '''
-                    SELECT clubs_name, country_name, club_id
-                    FROM clubs
-                    JOIN competitions
-                    ON clubs.domestic_competition_id = competitions.domestic_league_code; 
-                '''
+                  
+                  SELECT 
+                        distinct(clubs_name),
+                        competition_code,
+                        games.competition_id,
+                        season,
+                        country_name,
+                        club_id,
+                        competition_type
+                    FROM games
+                    JOIN clubs ON clubs.club_id = games.home_club_id
+                    JOIN competitions ON competitions.competition_id = games.competition_id
+                    WHERE competitions_type = "domestic_league";
+                  '''
 
+
+    #cursor.execute(statement, (season,country, ))
+    #competitions_type = "domestic_league" AND
     cursor.execute(statement)
     clubslist = cursor.fetchall()
 
@@ -530,25 +544,16 @@ def games_add_game(game_datas):
         cursor = connection.cursor()
 
         check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
-        print("a")
-        print(game_datas["home_club_name"])
-        print(game_datas["away_club_name"])
 
         cursor.execute(check_club_statement %(game_datas["home_club_name"]) )
         home_name = cursor.fetchone()
         home_id = home_name[0]
-        print( type(home_id) )
 
         cursor.execute(check_club_statement %(game_datas["away_club_name"]) )
         away_name = cursor.fetchone()
         away_id = away_name[0]
-        print("c")
-        print(away_id)
 
         if not home_id or not away_id:
-            print("fuck")
-            print(home_id)
-            print(away_id)
             raise ValueError('Non-Existing Club(s)')
         
         max_game_id_statement = """Select game_id from games order by game_id DESC limit 1;"""
@@ -570,7 +575,6 @@ def games_add_game(game_datas):
                                              game_datas["away_club_name"], "", game_datas["competition_type"]))
         
         connection.commit()
-        print("done")
 
     except dbapi.DatabaseError:
         connection.rollback()
@@ -584,6 +588,77 @@ def games_add_game(game_datas):
 
     return True
 
+def game_update_get_all(game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor(dictionary=True)
+
+        statement = """SELECT * FROM games where game_id = %s"""
+
+        cursor.execute(statement %game_id)
+
+        results = cursor.fetchone()
+        return results
+    except dbapi.DatabaseError:
+        print("Database Error - game_update_get_all")
+    finally:
+        cursor.close()
+        connection.close()
+
+def game_update_game(updated_game, game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
+
+        cursor.execute(check_club_statement %(updated_game["home_club_name"]) )
+        home_name = cursor.fetchone()
+
+        cursor.execute(check_club_statement %(updated_game["away_club_name"]) )
+        away_name = cursor.fetchone()
+
+        if home_name and away_name:
+            away_id = away_name[0]
+            home_id = home_name[0]
+        else:
+            print(home_name)
+            print(away_name)
+            raise TypeError('No input?')
+
+        check_comp_statement = """SELECT competitions_name FROM competitions where competition_id = '%s';"""
+        cursor.execute(check_comp_statement %(updated_game["competition_id"]) )
+        temp = cursor.fetchone()
+        comp_name = temp[0]
+
+        updated_game["home_club_id"] = home_id
+        updated_game["away_club_id"] = away_id
+        updated_game["home_club_name"] = "'" + updated_game["home_club_name"] + "'"
+        updated_game["away_club_name"] = "'" + updated_game["away_club_name"] + "'"
+        updated_game["competition_id"] = "'" + updated_game["competition_id"] + "'"
+
+        update_parts = [f"{key} = %s" for key in updated_game]
+        update_statement = f"UPDATE games SET {', '.join(update_parts)} WHERE game_id = %s;"
+
+        update_values = tuple(updated_game.values()) + (game_id,)
+
+        print(update_statement %update_values)
+        cursor.execute(update_statement %update_values)
+        connection.commit()
+
+        pass
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database Error - Update Game")
+    except TypeError:
+        connection.rollback()
+        print("Type Error")
+    finally:
+        cursor.close()
+        connection.close()
+    
 def games_details_get_game(game_id):
 
     results = []
@@ -594,7 +669,7 @@ def games_details_get_game(game_id):
 
         statement = """SELECT home.clubs_name, away.clubs_name, A.home_club_goals, A.away_club_goals, A.home_club_position, A.away_club_position,
                         A.home_club_manager_name, A.away_club_manager_name, B.competitions_name, A.season, A.games_round, A.games_date, A.stadium,
-                        A.attendance, A.referee, A.home_club_formation, A.away_club_formation
+                        A.attendance, A.referee, A.home_club_formation, A.away_club_formation, A.game_id
                         FROM games A
                         LEFT JOIN competitions B ON A.competition_id = B.competition_id
                         LEFT JOIN clubs home ON A.home_club_id = home.club_id
@@ -673,9 +748,193 @@ def games_events_delete_event(game_event_id):
 
     return True
 
+def games_details_add_game_events(game_datas):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = '%s';"""
+
+        cursor.execute(check_club_statement %(game_datas["club"]) )
+        club_x = cursor.fetchone()
+        club_id = club_x[0]
+
+        check_player_statement = """SELECT player_id FROM players where players_name = '%s';"""
+
+        cursor.execute(check_player_statement %(game_datas["player"]) )
+        player_x = cursor.fetchone()
+        player_id = player_x[0]
+
+        check_other_player_statement = """SELECT player_id FROM players where players_name = '%s';"""
+
+        cursor.execute(check_other_player_statement %(game_datas["in_player"]) )
+        other_x = cursor.fetchone()
+        if other_x and game_datas["event"] == 'Substitutions':
+            other_player_id = other_x[0]
+        else:
+            other_player_id = 'NULL'
+
+        if not player_id:
+            raise ValueError('Non-Existing Club(s)')
+        
+        #Generate new game_event_id - original database uses some hash code for key
+        while(True):
+
+            res = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+
+            key_unique_statement = """SELECT count(*) FROM game_events where game_event_id = '%s';"""
+
+            cursor.execute(key_unique_statement %(res) )
+            temp = cursor.fetchone()
+            key_i = temp[0]
+
+            if(key_i == 1):
+                continue
+            else:
+                break
+
+        insertion_statement = """INSERT INTO game_events(game_event_id, game_events_date, game_id, minute, game_events_type,
+                                club_id, player_id, description, player_in_id, player_assist_id)
+                                VALUES ('%s', %s, %s, %s, '%s', %s, %s, '%s', %s, %s);"""
+
+        cursor.execute(insertion_statement %(res, 'NULL', game_datas['game_id'], game_datas['minute'], game_datas['event'],
+                                             club_id, player_id, game_datas['details'], other_player_id, 'NULL') )
+        
+
+        connection.commit()
+
+        pass
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database error - Add Game Event")
+    except ValueError:
+        connection.rollback()
+        print("Value error - Non-existing Player")
+    finally:
+        cursor.close()
+        connection.close()
+
+    #if not home_id or not away_id:
+    #raise ValueError('Non-Existing Club(s)')
+        
+def game_update_game_event(updated_game, player_names, game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = %s;"""
+        print(player_names)
+
+        cursor.execute(check_club_statement %player_names["club"])
+        club_x = cursor.fetchone()
+        club_id = club_x[0]
+
+
+        check_club_statement = """SELECT player_id FROM players where players_name = %s;"""
+
+        cursor.execute(check_club_statement %player_names["player_name"] )
+        home_name = cursor.fetchone()
+
+        if player_names["player_in_name"]:
+            cursor.execute(check_club_statement %player_names["player_in_name"] )
+            away_name = cursor.fetchone()
+        if away_name:
+            player_in_id = away_name[0]
+        else:
+            player_in_id = 'NULL'
+
+        if home_name:
+            players_id = home_name[0]
+        else:
+            raise TypeError('No input?')
+
+        updated_game["player_id"] = players_id
+        updated_game["player_in_id"] = player_in_id
+        updated_game["club_id"] = club_id
+
+        update_parts = [f"{key} = %s" for key in updated_game]
+        update_statement = f"UPDATE game_events SET {', '.join(update_parts)} WHERE game_event_id = %s;"
+
+        update_values = tuple(updated_game.values()) + ( "'" + game_id + "'",)
+
+        print(update_statement %update_values)
+
+        cursor.execute(update_statement %update_values)
+        connection.commit()
+        print("success")
+
+        pass
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database Error - Update Game")
+    except TypeError:
+        connection.rollback()
+        print("Type Error")
+    finally:
+        cursor.close()
+        connection.close()
+
+def event_update_get_all(event_id):
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor(dictionary=True)
+
+        statement = """SELECT A.*, B.clubs_name, C.players_name as player_name, D.players_name as player_in_name
+                        FROM game_events A
+                        LEFT JOIN clubs B ON A.club_id = B.club_id
+                        LEFT JOIN players C ON A.player_id = C.player_id
+                        LEFT JOIN players D ON A.player_in_id = D.player_id
+                        where game_event_id = '%s';"""
+
+        cursor.execute(statement %event_id)
+
+        results = cursor.fetchone()
+        return results
+    except dbapi.DatabaseError:
+        print("Database Error - game_update_get_all")
+    finally:
+        cursor.close()
+        connection.close()
+        
+def player_get_events_in_game(game_id, player_id):
+
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """SELECT game_events_type, description FROM game_events
+                   WHERE game_id = %s AND player_id = %s"""
+    
+    cursor.execute(statement %(game_id, player_id))
+
+    results = cursor.fetchall()
+    return results
+
+def get_players(game_id, club_name):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor(dictionary=True)
+
+        
+    query = """
+    SELECT a.player_name, p.position 
+    FROM appearances a 
+    JOIN players p ON a.player_id = p.player_id
+    JOIN clubs c ON c.club_id = a.player_club_id
+    WHERE a.game_id = %s AND c.clubs_name = %s
+	ORDER BY POSITION;
+    """
+
+    cursor.execute(query, (game_id, club_name))
+    result = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return result
+
 def get_transfer_list(request):
         if request.method == 'POST':
-            #connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
             connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
 
             cursor = connection.cursor()
@@ -697,7 +956,7 @@ def get_transfer_list(request):
 
             statement = """SELECT A.sub_position, A.first_name, A.last_name, TIMESTAMPDIFF(YEAR, A.date_of_birth, CURDATE()) AS age, 
                            A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur,
-                           A.contract_expiration_date, MAX(B.player_valuations_date) as latest
+                           A.contract_expiration_date, MAX(B.player_valuations_date) as latest, A.player_id
                            FROM futbalmania.players A
                            Join futbalmania.player_valuations B on A.player_id = B.player_id
                            Join futbalmania.clubs C ON  A.current_club_id = C.club_id
@@ -710,7 +969,7 @@ def get_transfer_list(request):
                            AND TIMESTAMPDIFF(YEAR, A.date_of_birth, CURDATE()) BETWEEN %s AND %s
                            AND B.last_season = 2023
                            GROUP BY A.sub_position, A.first_name, A.last_name, age, 
-                           A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur, A.contract_expiration_date 
+                           A.current_club_name, A.foot, A.height_in_cm, A.market_value_in_eur, A.contract_expiration_date, A.player_id 
                            ORDER BY latest DESC;
                            """
             
@@ -722,8 +981,7 @@ def get_transfer_list(request):
 
 def get_competition_country(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania")
-            #connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             country = request.form.get('country')
 
@@ -741,7 +999,7 @@ def get_competition_country(request):
         
 def create_competition(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             id = request.form.get('id')
             name = request.form.get('name')
@@ -766,7 +1024,7 @@ def create_competition(request):
 
 def change_tournament(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
             id = request.form.get('id')
             if 'ban_id' in request.form:
@@ -787,7 +1045,7 @@ def change_tournament(request):
      
 def update_value(request):
         if request.method == 'POST':
-            connection = dbapi.connect(host = "localhost", port = 3306, user = "root", password="Emre1234", database="futbalmania") 
+            connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
             cursor = connection.cursor()
 
             name = request.form.get('name')
@@ -856,14 +1114,14 @@ def update_value(request):
             connection.close() 
     
     
-def get_leagues():
+def get_leagues(season, country):
         connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
         cursor = connection.cursor()
 
         statement = """ 
                     SELECT 
                         game_id,
-                        competition_id,
+                        games.competition_id,
                         season,
                         games_round,
                         games_date,
@@ -876,11 +1134,88 @@ def get_leagues():
                         FROM games
                         JOIN clubs c1 ON c1.club_id = games.home_club_id
                         JOIN clubs c2 ON c2.club_id = games.away_club_id
-                    where competition_id = "L1" AND  
-                    season = "2022" ;
+                        JOIN competitions c3 ON c3.competition_id = games.competition_id
+                    where 
+                    c3.competition_id = %s AND
+                    season = %s AND
+                    c3.sub_type = "first_tier"
+                     ;
          """
+
+
+        cursor.execute(statement, (season,country, ))
+
+       # cursor.execute(statement)
+        result =cursor.fetchall()
+        cursor.close()
+        connection.close()    
+        return result
+
+def getnameofleague():
+
+        
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """ 
+                   SELECT 
+                        
+                        distinct(games.competition_id)
+                        
+                        
+                        FROM games
+                   
+                        JOIN competitions c3 ON c3.competition_id = games.competition_id
+                    where 
+                
+                    c3.sub_type = "first_tier"
+         """
+
+
+
         cursor.execute(statement)
         result =cursor.fetchall()
         cursor.close()
         connection.close()    
         return result
+
+def seasonofleague():
+
+        
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        statement = """ 
+                    SELECT 
+                          distinct(season)
+                        FROM competitions 
+                        JOIN games ON competitions.competition_id = games.competition_id
+                    where 
+                    sub_type = "first_tier";
+                    ORDER BY season ASC
+
+         """
+
+
+
+        cursor.execute(statement)
+        result =cursor.fetchall()
+        cursor.close()
+        connection.close()    
+        return result
+
+def line_ups():
+
+    connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """
+                SELECT distinct(game_lineups_position) 
+                FROM game_lineups;
+            """     
+
+    cursor.execute(statement)
+    result =cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result

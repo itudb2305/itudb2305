@@ -28,7 +28,7 @@
                 color: #333333;
             }
     
-            h1 {
+            h1 {        
                 font-size: 28px;
                 margin-bottom: 10px;
             }
@@ -77,22 +77,25 @@
         
 
         <ul id="country-filter">
-            {% for key, values in country.items() %}
+            {% for k in xx %}
+                {% if (loop.index - 1) % 12 == 0  %}
+                    <img  src="{{ k.flag  }}" alt="flag" width="120" height="80">
+                {% endif %}
                 <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapse{{ loop.index }}" aria-expanded="false"
                                     aria-controls="collapse{{ loop.index }}">
-                                {{ key }}
+                                {{ k.season }}
                             </button>
                         </h2>
                         <div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
                              data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <ul>
-                                    {% for value1, value0 in values%}
-                                        <a href="{{ url_for('clubs_game', club_id=value0) }}"><li> {{ value1 }} </li></a>
+                                    {% for value1 in k.clubs%}
+                                        <a href="{{ url_for('clubs_game', club_id=value1) }}"><li> {{ value1 }} </li></a>
                                     {% endfor %}
                                 </ul>
                             </div>

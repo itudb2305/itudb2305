@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Player{% endblock %}
+{% block title %}Games{% endblock %}
 {% block content %}
 
     <section id="games">
@@ -48,7 +48,7 @@
           <th>AWAY CLUB</th>
           <th>DATE</th>
           <th>DETAILS</th>
-          <th>DELETE</th>
+          <th><a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-sm btn-success mx-2"><i class="fas fa-plus"></i></a></th>
         </tr>
       </thead>
       <tbody class="game_table_body">
@@ -67,36 +67,83 @@
       </tbody>
     </table>
 
-    <div class="add_game"> <!--Memento Mori-->
-      <button type="button" class="accordion">Add Game</button>
-      <div class="game_list">
-        <form action="./games" method="POST">
-          <label>Season: <input type="text" name="season" placeholder="2012, 2013 etc." autocomplete="off"/></label>
-          <label>Game Round: <input type="text" name="game_round" autocomplete="off"/></label>
-          <label>Date: <input type="text" name="date" placeholder="yyyy-mm-dd" autocomplete="off"/></label>
-          <label>Home Club Name: <input type="text" name="home_club_name" required autocomplete="off"/></label>
-          <label>Away Club Name: <input type="text" name="away_club_name" required autocomplete="off"/></label>
-          <label>Home Club Goals: <input type="text" name="home_club_goals" autocomplete="off"/></label>
-          <label>Away Club Goals: <input type="text" name="away_club_goals" autocomplete="off"/></label>
-          <label>Home Club Position: <input type="text" name="home_club_position" autocomplete="off"/></label>
-          <label>Away Club Position: <input type="text" name="away_club_position" autocomplete="off"/></label>
-          <label>Home Club Manager: <input type="text" name="home_club_manager" autocomplete="off"/></label>
-          <label>Away Club Manager: <input type="text" name="away_club_manager" autocomplete="off"/></label>
-          <label>Stadium: <input type="text" name="stadium" autocomplete="off"/></label>
-          <label>Attendance: <input type="text" name="attendance" autocomplete="off"/></label>
-          <label>Referee: <input type="text" name="referee" autocomplete="off"/></label>
-          <label>Home Club Formation: <input type="text" name="home_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
-          <label>Away Club Formation: <input type="text" name="away_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
-          <label>Competition Type: <input type="text" name="competition_type" autocomplete="off"/></label>
-          <label>Competition ID: <select name="competition_id" > {% for value in game_competitions %}
-            <option value="{{ value[0] }}">{{ value[1] }}</option>
-            {% endfor %}
-          </select>
-          </label>
-            <input type="submit" value="Add">
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add New Game</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="./games" method="POST">
+          <div class="modal-body">
+              <div class="form-outline mb-4">
+                <label>Season: <input type="text" name="season" placeholder="2012, 2013 etc." autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Game Round: <input type="text" name="game_round" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Date: <input type="text" name="date" placeholder="yyyy-mm-dd" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Home Club Name: <input type="text" name="home_club_name" required autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Away Club Name: <input type="text" name="away_club_name" required autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Home Club Goals: <input type="text" name="home_club_goals" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Away Club Goals: <input type="text" name="away_club_goals" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Home Club Position: <input type="text" name="home_club_position" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Away Club Position: <input type="text" name="away_club_position" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Home Club Manager: <input type="text" name="home_club_manager" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Away Club Manager: <input type="text" name="away_club_manager" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Stadium: <input type="text" name="stadium" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Attendance: <input type="text" name="attendance" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Referee: <input type="text" name="referee" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Home Club Formation: <input type="text" name="home_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Away Club Formation: <input type="text" name="away_club_formation" placeholder="4-2-3-1, 4-3-3 Atttacking etc." autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Competition Type: <input type="text" name="competition_type" autocomplete="off"/></label>
+              </div>
+              <div class="form-outline mb-4">
+                <label>Competition ID: <select name="competition_id" > {% for value in game_competitions %}
+                  <option value="{{ value[0] }}">{{ value[1] }}</option>
+                  {% endfor %}
+                </select>
+                </label>
+              </div>
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
           </form>
       </div>
-    </div>
+      </div>
+  </div>
 
     <script>
       var acc = document.getElementsByClassName("accordion");

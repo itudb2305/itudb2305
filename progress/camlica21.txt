@@ -5,3 +5,4 @@ Fifth week: Fixed the transfer page and python code. Added age filtering and sho
 sixth week: Created a update_market_value html page and the corresponding flask code that updates the market value of a player (inserts a new row to the player_valuations table).
 Seventh week: Added two more options inside update_market_value html page, so that the users now can correct the last valuation and also delete it.
 Added create competition. Added ban competition option. Added change competition name option. Deleted the create_tournament page, integrated it to the competitions page.
+integrated the player details page to the transfer page. Also added some style to the transfer page.

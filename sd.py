@@ -4,6 +4,40 @@ import requests
 from data_base import *
 import random
 
+class Clubs:
+    def __init__(self, country, season):
+        self.country = country
+        self.season = season
+        self.clubs = []
+        self.flag = "https://www.nationsonline.org/flags/" + country.lower() + "_flag.gif"
+
+    def setCountry(self,country):
+        self.country = country
+
+    def setSeason(self,season):
+        self.season = season
+
+    def setClubs(self,ctry, ssn,clbs):
+        for clb in clbs:
+            if self.country == ctry and self.season == ssn:
+                self.clubs.append(clb)
+        
+
+    
+
+    def __repr__(self):
+        return f"Club( '{self.country}', '{self.season}', '{self.clubs}')"
+
+
+
+
+
+
+
+
+
+
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -11,6 +45,11 @@ app.secret_key = 'your_secret_key'
 @app.route("/")
 @app.route("/home")
 def home():
+    x = line_ups()
+
+    x = [item[0] for item in x]
+
+    print(x)
     return render_template('home.html')
 
 ############################## PLAYER PAGE #########################################
@@ -200,45 +239,70 @@ def edit_appearance(appearance_id):
 #################################################################################################################################
 
 @app.route("/clubs")
-def clubs():
-    #kka
+def clubs(season="2023", cty = "Turkey"):
+    
     data = club_list()
-    datacopied = []
-    country = []
-    #convert the tuple to list
-    for i in range(len(data)):
-        datacopied.append(data[i])
-
-    valxvaly = []
-    valxvalz = []
-    #append the clubs
-    for i in range(len(datacopied)):
-        valxvaly.append(datacopied[i][1])
-        valxvalz.append(datacopied[i][2])
+    clubname = [i[0] for i in data]
+    country = [i[4] for i in data]
+    season = [i[3] for i in data]
+    
     
     unique_list = []
-    # get unique countries
-    for x in valxvaly:
-        # check if exists in unique_list or not
+    for x in country:
         if x not in unique_list:
             unique_list.append(x)
-    
-    #create a dictionary
-    my_dict = {key: [] for key in unique_list}
-    my_dict2 = {key: [] for key in unique_list}
 
-    for i in range(0, len(datacopied)):
-        if datacopied[i][1] in my_dict:
-            my_dict[datacopied[i][1]].append(datacopied[i][0])
-            my_dict2[datacopied[i][1]].append(datacopied[i][2])
+    unique_list2 = []
+    
+    for x in season:
+        if x not in unique_list2:
+            unique_list2.append(x)
+    unique_list2 = {key: [] for key in unique_list2}
+    countryseason = {key: unique_list2 for key in unique_list}
+    #print(countryseason.values())
+    xy = []
+    lx = []
+    for i in unique_list:
+        for j in unique_list2:
+           xy.append(Clubs(i,j))
+    
+
+    print(xy)
+    
+
+    for j in xy:
+        for i in data:
+            if i[4] == j.country and i[3] == j.season:
+                j.clubs.append(i[0])
+
+    print(xy)
+    """     my_dict = {key: [] for key in unique_list}
+    my_dict2 = {key: [] for key in unique_list}
+    my_list = [] """
+    """  
+    for i in range(0, len(data)):
+        if data[i][4] in x:
+            if data[i][3] in countryseason.values():
+                countryseason[data[i][4]][data[i][3]] = "x"
 
             
-    merged_dict = {}
-    for key in my_dict.keys():
-        merged_dict[key] = zip(my_dict[key], my_dict2[key])
-   
-    return render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
+                """ 
+    """      my_dict[data[i][4]].append(data[i][0])
+                my_dict2[data[i][4]].append(data[i][5]) """
 
+    #print(countryseason)
+    """  merged_dict = {}
+    for key in my_dict.keys():
+        merged_dict[key] = list(zip(my_dict[key], my_dict2[key]))
+    """
+
+    #eturn render_template('clubs.html', title='Player', country=merged_dict, clubn=[])
+   
+
+    #merged_dict = zip(clubname, country, season)
+   
+
+    return render_template('clubs.html', title='Player',country=xy, cx=xy, clubn=data, xx = xy)
 #kaleab
 @app.route("/clubs_game?club_id=3")
 @app.route("/clubs_game")
@@ -250,13 +314,24 @@ def clubs_game(club_id=3):
 #kaleab
 @app.route("/leagues")
 def leagues():
-    data = get_leagues()
-
-    competition_id =list(set([field[6] for field in data]))
+    league = request.args.get("league", default="GB1")
+    season = request.args.get("season", default="2023")
+    url = url_for('leagues', league=league, season=season)
+    data = get_leagues(league,season)
+    competition_ids = list(set([field[1] for field in data]))
+    clud_ids =list(set([field[6] for field in data]))
     competition_score = []
-    #competition_id = [27]
+    print(competition_ids)
     templist = []
-    for i in competition_id:
+    print(competition_ids)
+    for i in competition_ids:
+        if i == league:
+            clud_ids = list(set([field[6] for field in data if field[1] == i]))
+
+            #clud_ids =list(set([field[6] for field in data] if field[1] == i))
+
+    point = 0
+    for i in clud_ids:
         club_name = ""
         points = 0 #
         scored_for = 0 #
@@ -304,15 +379,25 @@ def leagues():
         netscore = scored_for - scored_against
         templist.append([club_name, match_played, win, draw, lose, scored_for, scored_against, netscore, points])
                
-    competition_id.append(point)
+    clud_ids.append(point)
                     
+        
     templist = (sorted(templist, key=lambda x: (x[-1], x[-2])))
     templist = templist[::-1]
     
     #competition_score.append([j[6], 3, 0, 0])
-    return render_template('leagues.html', title='Leagues', result=templist)
+    x = getnameofleague()
+    x = [item[0] for item in x]
 
-############################################ MCQ GAME ############################################
+    y = seasonofleague()
+    y = [item[0] for item in y]
+    y.reverse()
+    print(y)
+    
+    return render_template('leagues.html', title='Leagues', result=templist, leaguesnamelist = x, leaguesseason = y   )
+
+############################################ MCQ GAME ##########################################################
+
 @app.route("/quiz_game", methods=['GET', 'POST'])
 def quiz_game():
     if 'score' not in session:
@@ -429,15 +514,64 @@ def games_add():
 
     return redirect( url_for('games') ) 
 
-@app.route("/games_details/<int:game_id>")
+@app.route("/games/edit/<int:game_id>", methods=['POST', 'GET'])
+def edit_game(game_id):
+
+    if request.method == 'POST':
+        updated_game = { #This columns will be dropped when i normalize
+            'competition_id': request.form.get('competition_id'),
+            'season': request.form.get('season'),
+            'games_round': "'" + request.form.get('games_round') + "'",
+            'games_date': "'" + request.form.get('games_date') + "'",
+            'home_club_id': request.form.get('home_club_id'), #from search
+            'away_club_id': request.form.get('away_club_id'), #from search
+            'home_club_goals': request.form.get('home_club_goals'),
+            'away_club_goals': request.form.get('away_club_goals'),
+            'home_club_position': request.form.get('home_club_position'),
+            'away_club_position': request.form.get('away_club_position'),
+            'home_club_manager_name': "'" + request.form.get('home_club_manager_name') + "'",
+            'away_club_manager_name': "'" + request.form.get('away_club_manager_name') + "'",
+            'stadium': "'" + request.form.get('stadium') + "'",
+            'attendance': request.form.get('attendance'),
+            'referee': "'" + request.form.get('referee') + "'",
+            #'url': '',
+            'home_club_formation': "'" + request.form.get('home_club_formation') + "'",
+            'away_club_formation': "'" + request.form.get('away_club_formation') + "'",
+            'home_club_name': request.form.get('home_club_name'),
+            'away_club_name': request.form.get('away_club_name'),
+            #'games_aggregate': ''
+            'competition_type': "''" #from search
+        }
+
+        game_update_game(updated_game, game_id)
+        return redirect( url_for('games_details', game_id = game_id) ) 
+    else:
+        game_competitions = game_get_comp()
+        game_details = game_update_get_all(game_id)
+        return render_template('edit_game.html',
+                                game_details = game_details,
+                                game_competitions = game_competitions)
+
+@app.route("/games_details/<int:game_id>", methods=['POST', 'GET'])
 def games_details(game_id):
+
+    if request.method == 'POST': #For adding new games
+        all_form_data = request.form
+        requests.post( url_for('games_events_add', _external=True), all_form_data )
+        return redirect( url_for('games_details', game_id = game_id) ) 
 
     games_details = games_details_get_game( int(game_id) )
     games_events = games_details_get_event( int(game_id) )
+    home_line = get_players(game_id, games_details[0] )
+    away_line = get_players(game_id, games_details[1] )
+
+    print(home_line)
 
     return render_template('game_details.html',
                             games_details = games_details,
-                            games_events = games_events)
+                            games_events = games_events,
+                            home_line = home_line,
+                            away_line = away_line)
 
 @app.route("/game_events_delete")
 def game_events_delete():
@@ -446,6 +580,47 @@ def game_events_delete():
     games_events_delete_event( game_event_id )
 
     return redirect( request.headers.get("Referer") ) 
+
+@app.route("/games_events_add", methods =['POST', 'GET'])
+def games_events_add():
+    
+    game_datas = request.form
+    print(game_datas)
+    
+    games_details_add_game_events(game_datas)
+
+    return redirect( url_for('games_details', game_id = game_datas["game_id"])  ) 
+
+@app.route("/game_events/edit/<int:game_id>/<string:event_id>", methods=['POST', 'GET'])
+def edit_game_event(event_id, game_id):
+
+    if request.method == 'POST':
+        updated_game = { #This columns will be dropped when i normalize
+            'minute': request.form.get('minute'),
+            'game_events_type': "'" + request.form.get('game_events_type') + "'",
+            'club_id': '',
+            'player_id': '',
+            'player_in_id': '',
+            'description': "'" + request.form.get('description') + "'",
+            'player_assist_id': "''"
+        }
+
+        player_names = {
+            'player_name': "'" + request.form.get('player_name') + "'",
+            'player_in_name': "'" + request.form.get('player_in_name') + "'",
+            'club': "'" + request.form.get('clubs_name') + "'"
+        }
+
+        game_update_game_event(updated_game, player_names, event_id)
+        return redirect( url_for('games_details', game_id = game_id) ) 
+    else:
+        event_type = [["Cards"], ["Substitutions"], ["Goals"], ["Others"]]
+        event_details = event_update_get_all(event_id)
+        return render_template('edit_game_event.html',
+                                game_id = game_id,
+                                event_type = event_type,
+                                game_details = event_details)
+
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
