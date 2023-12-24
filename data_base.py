@@ -526,6 +526,84 @@ def games_details_add_game_events(game_datas):
     #if not home_id or not away_id:
     #raise ValueError('Non-Existing Club(s)')
         
+def game_update_game_event(updated_game, player_names, game_id):
+
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor()
+
+        check_club_statement = """SELECT club_id FROM clubs where clubs_name = %s;"""
+        print(player_names)
+
+        cursor.execute(check_club_statement %player_names["club"])
+        club_x = cursor.fetchone()
+        club_id = club_x[0]
+
+
+        check_club_statement = """SELECT player_id FROM players where players_name = %s;"""
+
+        cursor.execute(check_club_statement %player_names["player_name"] )
+        home_name = cursor.fetchone()
+
+        if player_names["player_in_name"]:
+            cursor.execute(check_club_statement %player_names["player_in_name"] )
+            away_name = cursor.fetchone()
+        if away_name:
+            player_in_id = away_name[0]
+
+        if home_name:
+            players_id = home_name[0]
+        else:
+            raise TypeError('No input?')
+
+        updated_game["player_id"] = players_id
+        updated_game["player_in_id"] = player_in_id
+        updated_game["club_id"] = club_id
+
+        update_parts = [f"{key} = %s" for key in updated_game]
+        update_statement = f"UPDATE game_events SET {', '.join(update_parts)} WHERE game_event_id = %s;"
+
+        update_values = tuple(updated_game.values()) + ( "'" + game_id + "'",)
+
+        print(update_statement %update_values)
+
+        cursor.execute(update_statement %update_values)
+        connection.commit()
+        print("success")
+
+        pass
+    except dbapi.DatabaseError:
+        connection.rollback()
+        print("Database Error - Update Game")
+    except TypeError:
+        connection.rollback()
+        print("Type Error")
+    finally:
+        cursor.close()
+        connection.close()
+
+def event_update_get_all(event_id):
+    try:
+        connection = dbapi.connect(host = HOST, port = PORT, user = USER, password=PASSWORD, database="futbalmania")
+        cursor = connection.cursor(dictionary=True)
+
+        statement = """SELECT A.*, B.clubs_name, C.players_name as player_name, D.players_name as player_in_name
+                        FROM game_events A
+                        LEFT JOIN clubs B ON A.club_id = B.club_id
+                        LEFT JOIN players C ON A.player_id = C.player_id
+                        LEFT JOIN players D ON A.player_in_id = D.player_id
+                        where game_event_id = '%s';"""
+
+        cursor.execute(statement %event_id)
+
+        results = cursor.fetchone()
+        return results
+    except dbapi.DatabaseError:
+        print("Database Error - game_update_get_all")
+    finally:
+        cursor.close()
+        connection.close()
+        
 def player_get_events_in_game(game_id, player_id):
 
     connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")

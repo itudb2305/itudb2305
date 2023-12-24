@@ -529,6 +529,36 @@ def games_events_add():
 
     return redirect( url_for('games_details', game_id = game_datas["game_id"])  ) 
 
+@app.route("/game_events/edit/<int:game_id>/<string:event_id>", methods=['POST', 'GET'])
+def edit_game_event(event_id, game_id):
+
+    if request.method == 'POST':
+        updated_game = { #This columns will be dropped when i normalize
+            'minute': request.form.get('minute'),
+            'game_events_type': "'" + request.form.get('game_events_type') + "'",
+            'club_id': '',
+            'player_id': '',
+            'player_in_id': '',
+            'description': "'" + request.form.get('description') + "'",
+            'player_assist_id': "''"
+        }
+
+        player_names = {
+            'player_name': "'" + request.form.get('player_name') + "'",
+            'player_in_name': "'" + request.form.get('player_in_name') + "'",
+            'club': "'" + request.form.get('clubs_name') + "'"
+        }
+
+        game_update_game_event(updated_game, player_names, event_id)
+        return redirect( url_for('games_details', game_id = game_id) ) 
+    else:
+        event_type = [["Cards"], ["Substitutions"], ["Goals"], ["Others"]]
+        event_details = event_update_get_all(event_id)
+        return render_template('edit_game_event.html',
+                                game_id = game_id,
+                                event_type = event_type,
+                                game_details = event_details)
+
 
 @app.route("/transfer", methods=['POST', 'GET'])
 def transfer():
