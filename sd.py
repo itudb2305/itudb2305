@@ -589,13 +589,13 @@ def update_market_value():
     else:
         return render_template('update_market_value.html', title='Update Market Value')
 
-@app.route("/create_tournament", methods=['POST', 'GET'])
+@app.route("/competitions/create_tournament", methods=['POST', 'GET'])
 def create_tournament():
     if request.method == 'POST':
         create_competition(request)
-        return render_template('competitions.html', title='Competitions')
+        return render_template('create_tournament.html', title='New Tournament')
     else:
-        return render_template('competitions.html', title='Competitions')
+        return render_template('create_tournament.html', title='New Tournament')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
