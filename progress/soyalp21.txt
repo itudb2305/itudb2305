@@ -5,4 +5,4 @@ Week 2 (19/11/2023): Create statements are written and csv files loaded.
 Week 3 (24/11/2023): Problems from last week is solved (cleaning dataset from rows that break foreign key relations and adding foreign keys to tables; creating conditions for NULL insertion that prevents int, float, date insertion) and exported database as sql file.
 Week 4 (29/11/2023): data_base.py is created and database is connected, games site shows table, filtering menu is mostly complete. URL parameters is needed to complete site.
 Week 5 (07/12/2023): Filtering system is fully implemented. Games table can be selected with given conditions and it retains filtering options after reloding pages(this part is mostly quality of life purpose. But it took a lot of effort to complete.)
-    Next week is delete button, insertion of new games, Game details page to utilize whole games table, other details and updating existing rows.
+Week 6-7: Completed
