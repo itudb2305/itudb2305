@@ -236,6 +236,34 @@ def edit_appearance(appearance_id):
 
     return render_template('edit_appearance.html', appearance=appearance_info)
 
+@app.route("/appearance/add", methods=['GET', 'POST'])
+def add_appearance():
+    if request.method == 'POST':
+        new_appearance_data = {
+            'appearance_id': request.form.get('appearance_id'), 
+            'game_id': request.form.get('game_id'),
+            'player_id': request.form.get('player_id'),
+            'player_club_id': request.form.get('player_club_id'),
+            #'player_current_club_id': request.form.get('player_current_club_id'),
+            'appearances_date': request.form.get('appearances_date'),
+            #'player_name': request.form.get('player_name'),
+            'competition_id': request.form.get('competition_id'),
+            'yellow_cards': request.form.get('yellow_cards'),
+            'red_cards': request.form.get('red_cards'),
+            'goals': request.form.get('goals'),
+            'assists': request.form.get('assists'),
+            'minutes_played': request.form.get('minutes_played')
+        }
+
+        insert_new_appearance(new_appearance_data)
+        return redirect(url_for('appearances'))
+
+    return render_template('add_appearance.html')
+
+@app.route("/appearance/delete/<appearance_id>")
+def appearance_delete(appearance_id):
+    delete_appearance(appearance_id)
+    return redirect(url_for('appearances'))
 #################################################################################################################################
 
 @app.route("/clubs")
@@ -646,13 +674,13 @@ def update_market_value():
     else:
         return render_template('update_market_value.html', title='Update Market Value')
 
-@app.route("/competitions/create_tournament", methods=['POST', 'GET'])
+@app.route("/create_tournament", methods=['POST', 'GET'])
 def create_tournament():
     if request.method == 'POST':
         create_competition(request)
-        return render_template('create_tournament.html', title='New Tournament')
+        return render_template('competitions.html', title='Competitions')
     else:
-        return render_template('create_tournament.html', title='New Tournament')
+        return render_template('competitions.html', title='Competitions')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

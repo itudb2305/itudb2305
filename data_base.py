@@ -174,12 +174,16 @@ def update_player_details(player_id, **updated_data):
     connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
     cursor = connection.cursor()
 
+    for key, value in updated_data.items():
+        if value == 'None':
+            updated_data[key] = None
+
     update_parts = [f"{key} = %s" for key in updated_data]
     update_statement = f"UPDATE players SET {', '.join(update_parts)} WHERE player_id = %s;"
 
     update_values = tuple(updated_data.values()) + (player_id,)
 
-    cursor.execute(update_statement, update_values)
+    cursor.execute(update_statement  , update_values)
     connection.commit()
     cursor.close()
     connection.close()
@@ -272,13 +276,26 @@ def get_appearance_details(appearance_id):
     cursor = connection.cursor()
 
     statement = """
-        SELECT appearance_id, game_id, player_id, w.clubs_name, appearances_date, player_name, 
-        c.competitions_name, yellow_cards, red_cards, goals, assists, minutes_played
-        FROM appearances 
-        JOIN clubs w ON appearances.player_club_id = w.club_id
-        INNER JOIN competitions c ON appearances.competition_id = c.competition_id
-        WHERE appearance_id = %s;
-    """
+        SELECT 
+        a.appearance_id, 
+        a.game_id, 
+        a.player_id, 
+        wc.clubs_name AS player_club_name, 
+        a.appearances_date, 
+        a.player_name, 
+        c.competitions_name, 
+        a.yellow_cards, 
+        a.red_cards, 
+        a.goals, 
+        a.assists, 
+        a.minutes_played,
+        wcc.clubs_name AS player_current_club_name
+        FROM appearances a
+        JOIN clubs wc ON a.player_club_id = wc.club_id
+        JOIN clubs wcc ON a.player_current_club_id = wcc.club_id
+        INNER JOIN competitions c ON a.competition_id = c.competition_id
+        WHERE a.appearance_id = %s;
+        """
 
     cursor.execute(statement, (appearance_id,))
     appearance_data = cursor.fetchone()
@@ -302,7 +319,8 @@ def get_appearance_details(appearance_id):
             "red_cards": appearance_data[8],
             "goals": appearance_data[9],
             "assists": appearance_data[10],
-            "minutes_played": appearance_data[11]
+            "minutes_played": appearance_data[11],
+            "player_current_club_name": appearance_data[12]
         }
     else:
         appearance_info = None
@@ -324,6 +342,46 @@ def update_appearance_details(appearance_id, **updated_data):
     connection.commit()
     cursor.close()
     connection.close()
+
+def insert_new_appearance(new_appearance_data):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    player_id = new_appearance_data.get('player_id')
+    if player_id:
+        cursor.execute("SELECT current_club_id, players_name FROM players WHERE player_id = %s", (player_id,))
+        player_info = cursor.fetchone()
+        if player_info:
+            new_appearance_data['player_current_club_id'], new_appearance_data['player_name'] = player_info
+
+    columns = ', '.join(new_appearance_data.keys())
+    placeholders = ', '.join(['%s'] * len(new_appearance_data))
+    insert_statement = f"INSERT INTO appearances ({columns}) VALUES ({placeholders});"
+
+    insert_values = tuple(new_appearance_data.values())
+
+    cursor.execute(insert_statement, insert_values)
+    connection.commit()
+    
+    cursor.close()
+    connection.close()
+
+def delete_appearance(appearance_id):
+    connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
+    cursor = connection.cursor()
+
+    statement = """DELETE FROM appearances WHERE appearance_id = %s;"""
+
+    cursor.execute(statement, (appearance_id,))
+    connection.commit()
+    
+    cursor.close()
+    connection.close()
+
+    return True
+
+
+
 
 ######################### FOR QUESTION IN MCQ #################################################################################
 def question_game():

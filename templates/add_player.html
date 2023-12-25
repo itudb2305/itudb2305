@@ -8,6 +8,9 @@
         </div>
         <form action="{{ url_for('add_player') }}" method="post">
             <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> The player_id will be added automatically(by incrementing by one the max player_id).You need to fill all the fields (no need for image_url if you dont have one) . Current Club name need to exist in the clubs table.Thanks to that , we will be able to deduct the player's club_id and domestic_competition_id.
+                </div>
                 <div class="mb-3">
                     <label for="first_name" class="form-label">First Name</label>
                     <input type="text" class="form-control" id="first_name" name="first_name" value="{{ player.first_name }}">
