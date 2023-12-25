@@ -208,9 +208,9 @@ def edit_player(player_id):
                 'position': request.form.get('position'),
                 'foot': request.form.get('foot'),
                 'height_in_cm': request.form.get('height_in_cm'),  
-                'market_value_in_eur': request.form.get('market_value_in_eur'),  
+                #'market_value_in_eur': request.form.get('market_value_in_eur'),  
                 'highest_market_value_in_eur': request.form.get('highest_market_value_in_eur'),  
-                'contract_expiration_date': request.form.get('contract_expiration_date'),  
+                #'contract_expiration_date': request.form.get('contract_expiration_date'),  
                 'agent_name': request.form.get('agent_name'),
                 'image_url': request.form.get('image_url'),
                 'current_club_name': request.form.get('current_club_name')
@@ -278,7 +278,6 @@ def edit_appearance(appearance_id):
 
     if request.method == 'POST':
         updated_data = {
-             #'player_name': request.form.get('player_name'),
             'yellow_cards': request.form.get('yellow_cards'),
             'red_cards': request.form.get('red_cards'),
             'goals': request.form.get('goals'),
@@ -299,9 +298,7 @@ def add_appearance():
             'game_id': request.form.get('game_id'),
             'player_id': request.form.get('player_id'),
             'player_club_id': request.form.get('player_club_id'),
-            #'player_current_club_id': request.form.get('player_current_club_id'),
             'appearances_date': request.form.get('appearances_date'),
-            #'player_name': request.form.get('player_name'),
             'competition_id': request.form.get('competition_id'),
             'yellow_cards': request.form.get('yellow_cards'),
             'red_cards': request.form.get('red_cards'),

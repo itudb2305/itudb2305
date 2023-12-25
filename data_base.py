@@ -174,9 +174,9 @@ def update_player_details(player_id, **updated_data):
     connection = dbapi.connect(host=HOST, port=PORT, user=USER, password=PASSWORD, database="futbalmania")
     cursor = connection.cursor()
 
-    for key, value in updated_data.items():
-        if value == 'None':
-            updated_data[key] = None
+    for key in list(updated_data):
+        if updated_data[key] == 'None':
+            updated_data[key] = ' '
 
     update_parts = [f"{key} = %s" for key in updated_data]
     update_statement = f"UPDATE players SET {', '.join(update_parts)} WHERE player_id = %s;"
