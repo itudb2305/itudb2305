@@ -700,9 +700,9 @@ def update_market_value():
 def create_tournament():
     if request.method == 'POST':
         create_competition(request)
-        return render_template('competitions.html', title='Competitions')
+        return render_template('create_tournament.html', title='create_tournament')
     else:
-        return render_template('competitions.html', title='Competitions')
+        return render_template('create_tournament.html', title='create_tournament')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
