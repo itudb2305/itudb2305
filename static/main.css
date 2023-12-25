@@ -105,24 +105,6 @@ section {
     padding: 8px;
     border-bottom: 1px solid #ddd; /* Optional border between rows */
 }
-
-#competition_result_table{
-    width: 40%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-#competition_result_table th {
-    text-align: center;
-    padding: 8px;
-    background-color: #fdc777; /* Optional background color for headers */
-}
-
-#competition_result_table td {
-    text-align: center;
-    padding: 8px;
-    border-bottom: 1px solid #ddd; /* Optional border between rows */
-}
   
 .player_valuation_ul {
     list-style-type: none;
