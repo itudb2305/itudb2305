@@ -1,0 +1,5 @@
+Week 2 : Create basic webpage
+Week 3 : created clubs page where each club is sorted according to the country
+Week 4 : created club games page that shows the game of the club
+Week 5 : created a table for different leagues of different countries
+Week 6 : added an add club functionality to add clubs into the clubs table
