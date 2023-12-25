@@ -208,9 +208,7 @@ def edit_player(player_id):
                 'position': request.form.get('position'),
                 'foot': request.form.get('foot'),
                 'height_in_cm': request.form.get('height_in_cm'),  
-                #'market_value_in_eur': request.form.get('market_value_in_eur'),  
                 'highest_market_value_in_eur': request.form.get('highest_market_value_in_eur'),  
-                #'contract_expiration_date': request.form.get('contract_expiration_date'),  
                 'agent_name': request.form.get('agent_name'),
                 'image_url': request.form.get('image_url'),
                 'current_club_name': request.form.get('current_club_name')
@@ -231,7 +229,6 @@ def player_delete(player_id):
 @app.route('/appearances')
 def appearances():
     search_query = request.args.get('search', '')
-    #competition_filter = request.args.get('competition')
     club_filter = request.args.get('club')
     page = request.args.get('page', 1, type=int)
     per_page = 30
@@ -244,9 +241,7 @@ def appearances():
     if search_query:
         appearances_data = [appearance for appearance in appearances_data if search_query.lower() in appearance[1].lower()]
     
-    #if competition_filter:
-      # appearances_data = [appearance for appearance in appearances_data if appearance[4] == competition_filter]
-
+   
     if club_filter:
         appearances_data = [appearance for appearance in appearances_data if appearance[2] == club_filter]
 
